@@ -26,10 +26,14 @@
     --mono: 'JetBrains Mono', monospace;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html { overflow-x: hidden; }
+  html {
+    overflow-x: hidden;
+    background: #1a1815;
+    overscroll-behavior-y: none;
+  }
   body {
     font-family: var(--font);
-    background: var(--bg);
+    background: #1a1815;
     color: var(--text);
     -webkit-font-smoothing: antialiased;
     overscroll-behavior-y: none;
@@ -272,46 +276,13 @@
     font-style: italic;
   }
 
-  /* === PILLARS === */
-  .pillars {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem;
-  }
-  @media (max-width: 700px) { .pillars { grid-template-columns: 1fr; } }
-  .pillar {
-    border-radius: 14px;
-    padding: 1.75rem;
-    border: 1px solid var(--border);
-  }
-  .pillar-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    margin-bottom: 1rem;
-  }
-  .pillar h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-  }
-  .pillar p {
-    font-size: 0.85rem;
-    color: var(--muted);
-    font-weight: 300;
-    line-height: 1.7;
-  }
-
   .footer {
     text-align: center;
     padding: 2rem;
     font-size: 0.75rem;
     color: var(--faint);
     font-weight: 300;
+    background: var(--surface);
   }
 </style>
 </head>
@@ -391,30 +362,6 @@
   </div>
 </div>
 
-<!-- PILLARS: full screen -->
-<div class="section-screen" style="background:var(--bg)">
-  <div class="section-inner">
-    <div class="section-label">Design pillars</div>
-    <div class="section-title">What makes it feel right</div>
-    <div class="pillars">
-      <div class="pillar" style="background:var(--accent-soft)">
-        <div class="pillar-icon" style="background:var(--accent-soft);color:var(--accent)">&#x2764;</div>
-        <h4>Cozy despite the danger</h4>
-        <p>The van is warm. The road is uncertain. The contrast between home-on-wheels and the unknown is the soul of the game.</p>
-      </div>
-      <div class="pillar" style="background:var(--teal-soft)">
-        <div class="pillar-icon" style="background:var(--teal-soft);color:var(--teal)">&#x2728;</div>
-        <h4>A bond tested and strengthened</h4>
-        <p>The journey is hard, but you come out the other side closer than before. The relationship is the real reward.</p>
-      </div>
-      <div class="pillar" style="background:var(--amber-soft)">
-        <div class="pillar-icon" style="background:var(--amber-soft);color:var(--amber)">&#x2600;</div>
-        <h4>The mundane is the magic</h4>
-        <p>Buying kitchen gear in Poland, choosing a song for a mountain pass, pulling curtains for a daytime nap. Real moments make the best mechanics.</p>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div class="footer">Road Home &mdash; Game design project &mdash; March 2026</div>
 
