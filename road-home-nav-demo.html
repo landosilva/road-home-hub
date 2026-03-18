@@ -545,7 +545,7 @@
     <!-- 04 Driving -->
     <div class="screen" id="s4" style="left:80px;top:1100px">
       <div class="screen-img">
-        <div class="placeholder"><div class="placeholder-icon">🚐</div><div class="placeholder-text">Image placeholder</div></div>
+        <img src="images/van-driving-road.png" alt="Driving">
       </div>
       <div class="screen-body">
         <div class="screen-num" style="color:var(--amber)">Screen 04</div>
@@ -658,7 +658,7 @@
   <!-- 04 Driving -->
   <div class="play-screen" data-idx="3">
     <div class="play-bg">
-      <div class="play-placeholder"><div class="play-placeholder-icon">🚐</div><div class="play-placeholder-text">Driving</div></div>
+      <img src="images/van-driving-road.png" alt="Driving">
     </div>
         <button class="play-menu-btn" onclick="goTo(1)">☰ Main Menu</button>
     <div class="play-label">
@@ -850,8 +850,17 @@ function fitAll() {
 document.getElementById('resetView').addEventListener('click', fitAll);
 document.getElementById('fitAll').addEventListener('click', fitAll);
 
-// Start centered
-applyTransform();
+// Start focused on first screen (s1)
+function focusScreen(id) {
+  const s = document.getElementById(id);
+  const sl = parseInt(s.style.left), st = parseInt(s.style.top);
+  const sw = 340, sh = 300; // approximate screen card size
+  scale = 1.2;
+  panX = (wrap.clientWidth / 2) - (sl + sw / 2) * scale;
+  panY = (wrap.clientHeight / 2) - (st + sh / 2) * scale;
+  applyTransform();
+}
+focusScreen('s1');
 
 // ========== CONNECTION ARROWS ==========
 const connSvg = document.getElementById('connSvg');
@@ -916,8 +925,8 @@ function drawConns() {
     connSvg.innerHTML = defs + lines + tips;
   });
 }
-window.addEventListener('load', () => { drawConns(); fitAll(); });
-window.addEventListener('resize', () => { drawConns(); fitAll(); });
+window.addEventListener('load', () => { drawConns(); });
+window.addEventListener('resize', () => { drawConns(); });
 
 // ========== PLAY MODE ==========
 const overlay = document.getElementById('playOverlay');
