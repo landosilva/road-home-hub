@@ -187,6 +187,14 @@
     font-size: 0.7rem;
     user-select: none;
   }
+  .nav-tab-locked {
+    color: var(--faint);
+    opacity: 0.5;
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding: 0.35rem 0.75rem;
+    cursor: default;
+  }
 
   /* Toolbar */
   .toolbar {
@@ -491,7 +499,7 @@
     <span class="sep">·</span>
     <a href="road-home-nav-demo.html" class="active">Screen Flow</a>
     <span class="sep">·</span>
-    <a href="#" id="navDemo">Demo</a>
+    <span class="nav-tab-locked">Demo 🔒</span>
   </div>
 </div>
 
@@ -985,11 +993,6 @@ document.getElementById('playBtn').addEventListener('click', () => {
   overlay.classList.add('active');
   goTo(0);
 });
-document.getElementById('navDemo').addEventListener('click', (e) => {
-  e.preventDefault();
-  overlay.classList.add('active');
-  goTo(0);
-});
 document.getElementById('playClose').addEventListener('click', () => {
   overlay.classList.remove('active');
 });
@@ -1003,12 +1006,6 @@ document.querySelectorAll('.screen').forEach(s => {
     goTo(idx);
   });
 });
-
-// Auto-open demo if hash is #demo
-if (window.location.hash === '#demo') {
-  overlay.classList.add('active');
-  goTo(0);
-}
 
 // Keyboard
 document.addEventListener('keydown', (e) => {
