@@ -258,7 +258,11 @@
     overflow: hidden;
     box-shadow: 0 0 80px rgba(0,0,0,0.6);
   }
-  .play-screen.active { display: block; }
+  .play-screen.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
   /* The image fills the 16:9 frame */
   .play-bg {
@@ -370,6 +374,52 @@
   }
   .play-nav .nav-teal:hover { background: rgba(26,143,110,0.4); color: #fff; }
 
+  /* Map popup */
+  .map-popup {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+  }
+  .map-popup.active { display: flex; }
+  .map-popup-inner {
+    position: relative;
+    width: 80%;
+    max-width: 700px;
+    aspect-ratio: 4/3;
+    background: #1a1917;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .map-popup-inner .map-placeholder-icon { font-size: 4rem; opacity: 0.3; }
+  .map-popup-inner .map-placeholder-text { font-size: 0.9rem; font-weight: 300; letter-spacing: 0.05em; }
+  .map-popup-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.4);
+    color: rgba(255,255,255,0.6);
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .map-popup-close:hover { background: rgba(0,0,0,0.6); color: #fff; }
+
   /* Close button (top right, inside screen) */
   .play-close {
     position: absolute;
@@ -466,7 +516,7 @@
     <!-- 02 Main Menu -->
     <div class="screen" id="s2" style="left:80px;top:420px">
       <div class="screen-img">
-        <img src="images/van-sunset-road.jpg" alt="Main menu">
+        <img src="images/van-driving-back.png" alt="Main menu">
       </div>
       <div class="screen-body">
         <div class="screen-num" style="color:var(--accent)">Screen 02</div>
@@ -573,7 +623,7 @@
 
   <!-- 02 Main Menu -->
   <div class="play-screen" data-idx="1">
-    <div class="play-bg"><img src="images/van-sunset-road.jpg" alt=""></div>
+    <div class="play-bg"><img src="images/van-driving-back.png" alt=""></div>
     <div class="play-label">
       <div class="play-label-num">Screen 02</div>
       <div class="play-label-title">Main menu</div>
@@ -581,7 +631,6 @@
     </div>
     <div class="play-nav">
       <button id="playContinue1">▶ Continue →</button>
-      <button id="playHome1" class="nav-teal">🏠 You're home →</button>
       <button class="nav-next" id="playNext1">New Game →</button>
     </div>
   </div>
@@ -615,8 +664,16 @@
       <div class="play-label-desc">The open road. Navigate, explore, manage resources.</div>
     </div>
     <div class="play-nav">
+      <button id="playMap3">🗺 Map</button>
       <button id="playHome3" class="nav-teal">🏠 You're home →</button>
       <button class="nav-next" id="playNext3">Find a spot to rest →</button>
+    </div>
+    <div class="map-popup" id="mapPopup">
+      <div class="map-popup-inner">
+        <button class="map-popup-close" id="mapClose">✕</button>
+        <div class="map-placeholder-icon">🗺</div>
+        <div class="map-placeholder-text">Map placeholder</div>
+      </div>
     </div>
   </div>
   <div class="play-screen" data-idx="4">
@@ -821,7 +878,9 @@ function getEdgePoint(el, targetEl) {
 
 function drawConns() {
   requestAnimationFrame(() => {
-    let html = '<defs><marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="conn-arrow" points="0 0, 10 3.5, 0 7"/></marker></defs>';
+    let defs = '<defs><marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="conn-arrow" points="0 0, 10 3.5, 0 7"/></marker></defs>';
+    let lines = '<g class="conn-lines">';
+    let tips = '<g class="conn-tips">';
     conns.forEach(([fid, tid]) => {
       const from = document.getElementById(fid);
       const to = document.getElementById(tid);
@@ -830,12 +889,28 @@ function drawConns() {
       const a = getEdgePoint(from, to);
       const b = getEdgePoint(to, from);
       const dx = b.x - a.x, dy = b.y - a.y;
-      // For mostly vertical connections, curve gently
-      const cx1 = a.x, cy1 = a.y + dy * 0.4;
-      const cx2 = b.x, cy2 = b.y - dy * 0.4;
-      html += '<path class="conn-line" d="M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y+'" marker-end="url(#ah)"/>';
+      // Determine if connection exits horizontally or vertically
+      const aExitsHoriz = (a.y !== parseInt(from.style.top) && a.y !== parseInt(from.style.top) + from.offsetHeight);
+      const bExitsHoriz = (b.y !== parseInt(to.style.top) && b.y !== parseInt(to.style.top) + to.offsetHeight);
+      let cx1, cy1, cx2, cy2;
+      const dist = Math.max(Math.abs(dx), Math.abs(dy)) * 0.5;
+      if (aExitsHoriz) {
+        cx1 = a.x + Math.sign(dx || 1) * dist; cy1 = a.y;
+      } else {
+        cx1 = a.x; cy1 = a.y + Math.sign(dy || 1) * dist;
+      }
+      if (bExitsHoriz) {
+        cx2 = b.x - Math.sign(dx || 1) * dist; cy2 = b.y;
+      } else {
+        cx2 = b.x; cy2 = b.y - Math.sign(dy || 1) * dist;
+      }
+      const d = 'M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;
+      lines += '<path class="conn-line" d="'+d+'"/>';
+      tips += '<path class="conn-line" d="'+d+'" marker-end="url(#ah)" style="stroke:none"/>';
     });
-    connSvg.innerHTML = html;
+    lines += '</g>';
+    tips += '</g>';
+    connSvg.innerHTML = defs + lines + tips;
   });
 }
 window.addEventListener('load', () => { drawConns(); fitAll(); });
@@ -888,8 +963,11 @@ document.getElementById('playHome3').addEventListener('click', () => goTo(6));
 
 // Main menu: Continue → driving (skip character creation)
 document.getElementById('playContinue1').addEventListener('click', () => goTo(3));
-// Main menu: You're home → gallery
-document.getElementById('playHome1').addEventListener('click', () => goTo(6));
+
+// Map popup on driving screen
+const mapPopup = document.getElementById('mapPopup');
+document.getElementById('playMap3').addEventListener('click', () => mapPopup.classList.add('active'));
+document.getElementById('mapClose').addEventListener('click', () => mapPopup.classList.remove('active'));
 
 document.getElementById('playBtn').addEventListener('click', () => {
   overlay.classList.add('active');
