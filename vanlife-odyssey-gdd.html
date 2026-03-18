@@ -36,8 +36,53 @@
     height: 100vh;
   }
 
+  /* Shared nav header */
+  .nav-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 48px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    z-index: 200;
+    font-size: 0.82rem;
+  }
+  .nav-header-title {
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  .nav-header-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .nav-header-tabs a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .nav-header-tabs a:hover { color: var(--text); background: var(--surface); }
+  .nav-header-tabs a.active {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .nav-header-tabs .sep {
+    color: var(--border);
+    font-size: 0.7rem;
+    user-select: none;
+  }
+
   /* === LAYOUT === */
-  .wiki { display: flex; height: 100vh; }
+  .wiki { display: flex; height: calc(100vh - 48px); margin-top: 48px; }
 
   /* === SIDEBAR === */
   .sidebar {
@@ -340,16 +385,25 @@
 </head>
 <body>
 
+<!-- SHARED NAV HEADER -->
+<div class="nav-header">
+  <div class="nav-header-title">Road Home</div>
+  <div class="nav-header-tabs">
+    <a href="index.html">Hub</a>
+    <span class="sep">·</span>
+    <a href="vanlife-odyssey-gdd.html" class="active">Design Doc</a>
+    <span class="sep">·</span>
+    <a href="road-home-nav-demo.html">Screen Flow</a>
+    <span class="sep">·</span>
+    <a href="road-home-nav-demo.html#demo">Demo</a>
+  </div>
+</div>
+
 <div class="wiki">
 
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-header">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <a href="index.html">&larr; Back to hub</a>
-        <a href="road-home-nav-demo.html">Screen Flow &rarr;</a>
-      </div>
-      <div class="sidebar-title">Road Home</div>
       <div class="sidebar-sub">Game Design Document v0.4</div>
     </div>
     <div class="sidebar-nav">

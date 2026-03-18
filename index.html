@@ -40,6 +40,53 @@
   }
   ::selection { background: var(--accent); color: #fff; }
 
+  /* Shared nav header */
+  .nav-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 48px;
+    background: rgba(26,24,21,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    z-index: 200;
+    font-size: 0.82rem;
+  }
+  .nav-header-title {
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: #fff;
+    font-size: 0.95rem;
+  }
+  .nav-header-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .nav-header-tabs a {
+    text-decoration: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .nav-header-tabs a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .nav-header-tabs a.active {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .nav-header-tabs .sep {
+    color: rgba(255,255,255,0.15);
+    font-size: 0.7rem;
+    user-select: none;
+  }
+
   .fullscreen {
     min-height: 100vh;
     display: flex;
@@ -285,6 +332,20 @@
 </style>
 </head>
 <body>
+
+<!-- SHARED NAV HEADER -->
+<div class="nav-header">
+  <div class="nav-header-title">Road Home</div>
+  <div class="nav-header-tabs">
+    <a href="index.html" class="active">Hub</a>
+    <span class="sep">·</span>
+    <a href="vanlife-odyssey-gdd.html">Design Doc</a>
+    <span class="sep">·</span>
+    <a href="road-home-nav-demo.html">Screen Flow</a>
+    <span class="sep">·</span>
+    <a href="road-home-nav-demo.html#demo">Demo</a>
+  </div>
+</div>
 
 <!-- HERO: full screen -->
 <div class="fullscreen hero">

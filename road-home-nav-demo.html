@@ -57,7 +57,8 @@
   /* ========== CANVAS MODE ========== */
   .canvas-wrap {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 48px);
+    margin-top: 48px;
     overflow: hidden;
     position: relative;
     cursor: grab;
@@ -142,52 +143,49 @@
     line-height: 1.5;
   }
 
-  /* Top bar */
-  .topbar {
+  /* Shared nav header */
+  .nav-header {
     position: fixed;
     top: 0; left: 0; right: 0;
-    padding: 1rem 1.5rem;
+    height: 48px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    z-index: 100;
-    pointer-events: none;
+    padding: 0 1.5rem;
+    z-index: 200;
+    font-size: 0.82rem;
   }
-  .topbar > * { pointer-events: auto; }
-  .topbar-left { display: flex; align-items: center; gap: 0.6rem; }
-  .tb-btn {
+  .nav-header-title {
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  .nav-header-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .nav-header-tabs a {
     text-decoration: none;
     color: var(--muted);
     font-size: 0.8rem;
     font-weight: 400;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.45rem 0.85rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
     transition: all 0.15s;
-    cursor: pointer;
   }
-  .tb-btn:hover { color: var(--accent); border-color: var(--accent); }
-  .tb-title {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.45rem 0.85rem;
+  .nav-header-tabs a:hover { color: var(--text); background: var(--surface); }
+  .nav-header-tabs a.active {
+    color: var(--accent);
+    font-weight: 500;
   }
-  .tb-hint {
-    font-size: 0.72rem;
-    color: var(--faint);
-    font-weight: 300;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.45rem 0.85rem;
+  .nav-header-tabs .sep {
+    color: var(--border);
+    font-size: 0.7rem;
+    user-select: none;
   }
 
   /* Toolbar */
@@ -483,15 +481,17 @@
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar" id="topbar">
-  <div class="topbar-left">
-    <a class="tb-btn" href="index.html">&larr; Hub</a>
-    <div class="tb-title">Screen Flow</div>
-  </div>
-  <div class="tb-hint">Scroll to zoom · Drag to pan</div>
-  <div class="topbar-right">
-    <a class="tb-btn" href="vanlife-odyssey-gdd.html">Design Doc &rarr;</a>
+<!-- SHARED NAV HEADER -->
+<div class="nav-header">
+  <div class="nav-header-title">Road Home</div>
+  <div class="nav-header-tabs">
+    <a href="index.html">Hub</a>
+    <span class="sep">·</span>
+    <a href="vanlife-odyssey-gdd.html">Design Doc</a>
+    <span class="sep">·</span>
+    <a href="road-home-nav-demo.html" class="active">Screen Flow</a>
+    <span class="sep">·</span>
+    <a href="#" id="navDemo">Demo</a>
   </div>
 </div>
 
@@ -531,7 +531,7 @@
     <!-- 03 Character Creation -->
     <div class="screen" id="s3" style="left:80px;top:760px">
       <div class="screen-img">
-        <div class="placeholder"><div class="placeholder-icon">👤</div><div class="placeholder-text">Image placeholder</div></div>
+        <img src="images/van-character-creation.png" alt="Character creation">
       </div>
       <div class="screen-body">
         <div class="screen-num" style="color:var(--teal)">Screen 03</div>
@@ -641,7 +641,7 @@
   <!-- 03 Character Creation -->
   <div class="play-screen" data-idx="2">
     <div class="play-bg">
-      <div class="play-placeholder"><div class="play-placeholder-icon">👤</div><div class="play-placeholder-text">Character Creation</div></div>
+      <img src="images/van-character-creation.png" alt="Character creation">
     </div>
         <button class="play-menu-btn" onclick="goTo(1)">☰ Main Menu</button>
     <div class="play-label">
@@ -985,10 +985,30 @@ document.getElementById('playBtn').addEventListener('click', () => {
   overlay.classList.add('active');
   goTo(0);
 });
+document.getElementById('navDemo').addEventListener('click', (e) => {
+  e.preventDefault();
+  overlay.classList.add('active');
+  goTo(0);
+});
 document.getElementById('playClose').addEventListener('click', () => {
   overlay.classList.remove('active');
 });
-// goTo is called by inline onclick on menu buttons
+
+// Click screen card on canvas → open play mode at that screen
+document.querySelectorAll('.screen').forEach(s => {
+  s.style.cursor = 'pointer';
+  s.addEventListener('click', () => {
+    const idx = parseInt(s.id.replace('s', '')) - 1;
+    overlay.classList.add('active');
+    goTo(idx);
+  });
+});
+
+// Auto-open demo if hash is #demo
+if (window.location.hash === '#demo') {
+  overlay.classList.add('active');
+  goTo(0);
+}
 
 // Keyboard
 document.addEventListener('keydown', (e) => {
