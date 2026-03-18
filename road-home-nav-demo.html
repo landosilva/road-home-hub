@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Road Home — Navigation Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1A1A1F;
+    --card: #222228;
+    --card-hover: #2A2A32;
+    --text: #E8E6E1;
+    --muted: #8A8A8F;
+    --faint: #55555A;
+    --border: #333338;
+    --accent: #D4582A;
+    --teal: #2DD4A0;
+    --purple: #A78BFA;
+    --amber: #F5B731;
+    --blue: #60A5FA;
+    --coral: #F0997B;
+    --pink: #ED93B1;
+    --font: 'Outfit', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:var(--font); background:var(--bg); color:var(--text); overflow:hidden; height:100vh; }
+
+  .demo { display:flex; height:100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    padding: 1.25rem 1rem 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--faint);
+  }
+  .sidebar-group {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-group:last-child { border-bottom: none; }
+  .sidebar-group-label {
+    padding: 0.5rem 1rem 0.25rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faint);
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--muted);
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { background: var(--card-hover); color: var(--text); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(212,88,42,0.08); }
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Main area */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+  }
+  .topbar-title {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .topbar-nav {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .topbar-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .topbar-btn:hover { border-color: var(--accent); color: var(--text); }
+  .topbar-btn:disabled { opacity: 0.3; cursor: default; }
+  .topbar-badge {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--faint);
+    padding: 0.25rem 0.5rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+  }
+
+  /* Screen display */
+  .screen-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow: hidden;
+  }
+  .screen-frame {
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 16/9;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.2s;
+  }
+  .screen-label {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+  .screen-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 400px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* Wireframe elements inside screens */
+  .wire-hud {
+    position: absolute;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+  }
+  .wire-label {
+    font-size: 0.55rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--faint);
+    position: absolute;
+  }
+  .wire-btn {
+    position: absolute;
+    background: rgba(212,88,42,0.2);
+    border: 1px solid rgba(212,88,42,0.4);
+    border-radius: 6px;
+    color: var(--accent);
+    font-size: 0.6rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .wire-btn:hover { background: rgba(212,88,42,0.3); }
+  .wire-road {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60%;
+    background: linear-gradient(to top, #2a3a28 0%, #1e2a1c 40%, var(--card) 100%);
+    opacity: 0.5;
+  }
+  .wire-van {
+    width: 60px;
+    height: 30px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    position: absolute;
+  }
+  .wire-grid {
+    display: grid;
+    position: absolute;
+  }
+  .wire-cell {
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: 3px;
+  }
+  .wire-photo {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    padding: 0.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.7rem;
+    color: var(--faint);
+  }
+  .flow-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .flow-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.2s;
+  }
+  .flow-dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="demo">
+  <div class="sidebar">
+    <div class="sidebar-title">Road Home — screens</div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Pre-game</div>
+      <div class="nav-item active" onclick="goTo(0)">
+        <span class="nav-dot" style="background:var(--muted)"></span> Title screen
+      </div>
+      <div class="nav-item" onclick="goTo(1)">
+        <span class="nav-dot" style="background:var(--purple)"></span> Character creation
+      </div>
+      <div class="nav-item" onclick="goTo(2)">
+        <span class="nav-dot" style="background:var(--teal)"></span> Van preparation
+      </div>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Core loop</div>
+      <div class="nav-item" onclick="goTo(3)">
+        <span class="nav-dot" style="background:var(--amber)"></span> Route planning
+      </div>
+      <div class="nav-item" onclick="goTo(4)">
+        <span class="nav-dot" style="background:var(--coral)"></span> Driving
+      </div>
+      <div class="nav-item" onclick="goTo(5)">
+        <span class="nav-dot" style="background:var(--coral)"></span> Exploration stop
+      </div>
+      <div class="nav-item" onclick="goTo(6)">
+        <span class="nav-dot" style="background:var(--purple)"></span> Rest spot selection
+      </div>
+      <div class="nav-item" onclick="goTo(7)">
+        <span class="nav-dot" style="background:var(--blue)"></span> Camp setup
+      </div>
+      <div class="nav-item" onclick="goTo(8)">
+        <span class="nav-dot" style="background:var(--blue)"></span> Night watch
+      </div>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Midpoint</div>
+      <div class="nav-item" onclick="goTo(9)">
+        <span class="nav-dot" style="background:var(--teal)"></span> Packing puzzle
+      </div>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Anytime</div>
+      <div class="nav-item" onclick="goTo(10)">
+        <span class="nav-dot" style="background:var(--coral)"></span> Content creation
+      </div>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">End</div>
+      <div class="nav-item" onclick="goTo(11)">
+        <span class="nav-dot" style="background:var(--pink)"></span> End-game gallery
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topTitle">Title screen</span>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <span class="topbar-badge" id="screenNum">01 / 12</span>
+        <div class="topbar-nav">
+          <button class="topbar-btn" id="prevBtn" onclick="prev()">Prev</button>
+          <button class="topbar-btn" id="nextBtn" onclick="next()">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-area">
+      <div class="screen-frame" id="screenFrame"></div>
+    </div>
+
+    <div class="bottom-bar">
+      <span>Player flow</span>
+      <div class="flow-dots" id="flowDots"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var screens = [
+  {
+    name: "Title screen",
+    desc: "Main menu. Splash art background with the van on a road at golden hour. Options: New game, Continue, Settings.",
+    color: "var(--muted)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:linear-gradient(135deg,#2a1f18 0%,#1a2a1c 50%,#1a1e2a 100%);opacity:0.6"></div>' +
+        '<div style="position:relative;text-align:center;z-index:1">' +
+        '<div style="font-size:2.2rem;font-weight:700;letter-spacing:-1px;margin-bottom:0.25rem">Road Home</div>' +
+        '<div style="font-size:0.8rem;color:var(--muted);font-weight:300;font-style:italic;margin-bottom:2rem">The longest shortcut to where you belong.</div>' +
+        '<div style="display:flex;flex-direction:column;gap:0.5rem;align-items:center">' +
+        '<div style="padding:0.5rem 2.5rem;border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:0.8rem;font-weight:500">New game</div>' +
+        '<div style="padding:0.5rem 2.5rem;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:0.8rem">Continue</div>' +
+        '<div style="padding:0.5rem 2.5rem;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:0.8rem">Settings</div>' +
+        '</div></div>';
+    }
+  },
+  {
+    name: "Character creation",
+    desc: "Customize both characters (appearance, sex, name), choose your van type, and pick your pet.",
+    color: "var(--purple)",
+    render: function(f) {
+      f.innerHTML = '<div style="display:flex;gap:1.5rem;padding:1.5rem;width:100%;height:100%;align-items:center">' +
+        '<div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">' +
+        '<div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint)">Characters</div>' +
+        '<div style="display:flex;gap:0.75rem">' +
+        '<div style="flex:1;aspect-ratio:3/4;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--purple)">Pilot</div>' +
+        '<div style="flex:1;aspect-ratio:3/4;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--purple)">Partner</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:0.5rem">' +
+        '<div style="flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:4px"></div>' +
+        '<div style="flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:4px"></div>' +
+        '</div>' +
+        '</div>' +
+        '<div style="width:1px;height:80%;background:var(--border)"></div>' +
+        '<div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">' +
+        '<div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint)">Van</div>' +
+        '<div style="flex:1;background:rgba(45,212,160,0.08);border:1px solid rgba(45,212,160,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--teal)">Van preview</div>' +
+        '<div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint)">Pet</div>' +
+        '<div style="display:flex;gap:0.5rem">' +
+        '<div style="flex:1;height:40px;background:rgba(245,183,49,0.08);border:1px solid rgba(245,183,49,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:var(--amber)">Cat</div>' +
+        '<div style="flex:1;height:40px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:var(--faint)">Locked</div>' +
+        '</div></div></div>';
+    }
+  },
+  {
+    name: "Van preparation",
+    desc: "Buy essentials for the trip. Not everything is available in your starting city — some gear must be found along the way.",
+    color: "var(--teal)",
+    render: function(f) {
+      f.innerHTML = '<div style="display:flex;width:100%;height:100%;padding:1rem">' +
+        '<div style="flex:2;position:relative;background:rgba(45,212,160,0.04);border:1px solid rgba(45,212,160,0.1);border-radius:8px;margin-right:0.75rem;display:flex;align-items:center;justify-content:center">' +
+        '<div style="font-size:0.65rem;color:var(--teal)">Van interior (top-down)</div>' +
+        '<div style="position:absolute;top:12%;left:10%;width:35%;height:30%;border:1px dashed rgba(45,212,160,0.2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.5rem;color:var(--faint)">Bed zone</div>' +
+        '<div style="position:absolute;bottom:15%;left:10%;width:35%;height:25%;border:1px dashed rgba(245,183,49,0.2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.5rem;color:var(--faint)">Kitchen zone</div>' +
+        '<div style="position:absolute;top:15%;right:8%;width:30%;height:60%;border:1px dashed rgba(255,255,255,0.08);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.5rem;color:var(--faint)">Storage</div>' +
+        '</div>' +
+        '<div style="flex:1;display:flex;flex-direction:column;gap:0.5rem;overflow:hidden">' +
+        '<div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint)">Checklist</div>' +
+        ['Bed sheets','Kitchen gear','Curtains','Cleaning','Water hose','Gas canister','Tools'].map(function(item,i) {
+          var done = i < 3;
+          return '<div style="display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.5rem;background:rgba(255,255,255,'+(done?'0.05':'0.02')+');border-radius:4px;font-size:0.6rem;color:'+(done?'var(--teal)':'var(--faint)')+'"><div style="width:10px;height:10px;border-radius:2px;border:1px solid '+(done?'var(--teal)':'var(--border)')+';display:flex;align-items:center;justify-content:center;font-size:7px">'+(done?'\u2713':'')+'</div>'+item+'</div>';
+        }).join('') +
+        '</div></div>';
+    }
+  },
+  {
+    name: "Route planning",
+    desc: "Top-down map of Europe. Choose your path, see weather forecasts, fuel estimates, and days remaining on the deadline.",
+    color: "var(--amber)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:linear-gradient(160deg,#1e2418 0%,#1a1e16 100%);opacity:0.5"></div>' +
+        '<div style="position:relative;width:100%;height:100%;padding:1rem">' +
+        '<svg viewBox="0 0 500 280" style="width:65%;position:absolute;left:5%;top:10%">' +
+        '<path d="M80 240 Q120 200 150 180 Q200 140 250 130 Q300 100 350 80 Q380 60 400 50" fill="none" stroke="rgba(245,183,49,0.4)" stroke-width="2" stroke-dasharray="6 4"/>' +
+        '<circle cx="80" cy="240" r="5" fill="#D4582A"/>' +
+        '<circle cx="400" cy="50" r="5" fill="#2DD4A0"/>' +
+        '<circle cx="200" cy="145" r="3" fill="rgba(255,255,255,0.3)"/>' +
+        '<circle cx="300" cy="100" r="3" fill="rgba(255,255,255,0.3)"/>' +
+        '<text x="65" y="260" fill="var(--muted)" font-size="9" font-family="var(--font)">Start</text>' +
+        '<text x="385" y="42" fill="var(--muted)" font-size="9" font-family="var(--font)">Destination</text>' +
+        '<text x="330" y="65" fill="rgba(96,165,250,0.6)" font-size="8" font-family="var(--font)">Snow</text>' +
+        '<text x="120" y="220" fill="rgba(245,183,49,0.5)" font-size="8" font-family="var(--font)">Clear</text>' +
+        '</svg>' +
+        '<div style="position:absolute;right:1rem;top:1rem;width:30%;display:flex;flex-direction:column;gap:0.5rem">' +
+        '<div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:0.5rem 0.75rem"><div style="font-size:0.5rem;color:var(--faint);text-transform:uppercase">Distance</div><div style="font-size:1rem;font-weight:600">2,847 km</div></div>' +
+        '<div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:0.5rem 0.75rem"><div style="font-size:0.5rem;color:var(--faint);text-transform:uppercase">Days left</div><div style="font-size:1rem;font-weight:600;color:var(--amber)">5</div></div>' +
+        '<div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:0.5rem 0.75rem"><div style="font-size:0.5rem;color:var(--faint);text-transform:uppercase">Fuel est.</div><div style="font-size:1rem;font-weight:600">3.2 tanks</div></div>' +
+        '</div></div>';
+    }
+  },
+  {
+    name: "Driving",
+    desc: "Main gameplay screen. Shared camera behind the van. HUD shows resources, minimap, speed. Co-pilot UI overlay for P2.",
+    color: "var(--coral)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:linear-gradient(to top,#2a3322 0%,#283028 30%,#3a4555 70%,#556688 100%);opacity:0.4"></div>' +
+        '<div style="position:absolute;bottom:25%;left:50%;transform:translateX(-50%);width:50px;height:25px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:3px"></div>' +
+        '<div style="position:absolute;bottom:22%;left:50%;transform:translateX(-50%);width:120px;height:2px;background:rgba(255,255,255,0.1)"></div>' +
+        '<div style="position:absolute;bottom:15%;left:50%;transform:translateX(-50%) perspective(200px) rotateX(45deg);width:200px;height:150px;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06)"></div>' +
+        '<div style="position:absolute;top:0.75rem;left:0.75rem;display:flex;flex-direction:column;gap:0.35rem">' +
+        ['Fuel','Food','Water','Health'].map(function(r,i) {
+          var colors = ['var(--amber)','var(--teal)','var(--blue)','var(--accent)'];
+          var widths = [65,80,45,90];
+          return '<div style="display:flex;align-items:center;gap:0.3rem"><div style="font-size:0.45rem;color:var(--faint);width:28px">'+r+'</div><div style="width:60px;height:5px;background:rgba(255,255,255,0.08);border-radius:2px"><div style="width:'+widths[i]+'%;height:100%;background:'+colors[i]+';border-radius:2px;opacity:0.7"></div></div></div>';
+        }).join('') +
+        '</div>' +
+        '<div style="position:absolute;top:0.75rem;right:0.75rem;width:70px;height:70px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.45rem;color:var(--faint)">Minimap</div>' +
+        '<div style="position:absolute;bottom:0.75rem;right:0.75rem;font-size:0.55rem;color:var(--muted)">Day 2 \u2022 14:32 \u2022 78 km/h</div>';
+    }
+  },
+  {
+    name: "Exploration stop",
+    desc: "Parked at a gas station, town, or POI. Interact with shops, scavenge items, refuel, use facilities.",
+    color: "var(--coral)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:linear-gradient(to top,#222018 0%,#1e1e1a 60%,#2a2a32 100%);opacity:0.4"></div>' +
+        '<div style="position:absolute;bottom:20%;left:15%;width:50px;height:25px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:3px"></div>' +
+        '<div style="position:absolute;bottom:28%;right:20%;width:80px;height:50px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.5rem;color:var(--faint)">Shop</div>' +
+        '<div style="display:flex;gap:0.5rem;position:absolute;bottom:0.75rem;left:50%;transform:translateX(-50%)">' +
+        ['Refuel','Shop','Water','Rest'].map(function(a) {
+          return '<div style="padding:0.3rem 0.7rem;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:5px;font-size:0.55rem;color:var(--muted);cursor:pointer">'+a+'</div>';
+        }).join('') +
+        '</div>';
+    }
+  },
+  {
+    name: "Rest spot selection",
+    desc: "Dusk scene. Scan the area for rest spots. Each has a safety rating, comfort level, and cost. Choose wisely.",
+    color: "var(--purple)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:linear-gradient(to top,#1a1a22 0%,#2a2040 40%,#4a3050 70%,#885530 100%);opacity:0.35"></div>' +
+        '<div style="position:absolute;top:0.75rem;left:50%;transform:translateX(-50%);font-size:0.6rem;color:var(--muted)">Find a place to rest</div>' +
+        '<div style="position:absolute;top:25%;left:15%;display:flex;flex-direction:column;align-items:center;gap:0.25rem;cursor:pointer"><div style="width:12px;height:12px;background:var(--teal);border-radius:50%;opacity:0.8"></div><div style="font-size:0.45rem;color:var(--teal)">Campground</div><div style="font-size:0.4rem;color:var(--faint)">\u20ac25 \u2022 Safe</div></div>' +
+        '<div style="position:absolute;top:40%;right:25%;display:flex;flex-direction:column;align-items:center;gap:0.25rem;cursor:pointer"><div style="width:12px;height:12px;background:var(--amber);border-radius:50%;opacity:0.8"></div><div style="font-size:0.45rem;color:var(--amber)">Rest area</div><div style="font-size:0.4rem;color:var(--faint)">Free \u2022 Moderate</div></div>' +
+        '<div style="position:absolute;bottom:30%;left:40%;display:flex;flex-direction:column;align-items:center;gap:0.25rem;cursor:pointer"><div style="width:12px;height:12px;background:var(--accent);border-radius:50%;opacity:0.8"></div><div style="font-size:0.45rem;color:var(--accent)">Roadside</div><div style="font-size:0.4rem;color:var(--faint)">Free \u2022 Risky</div></div>';
+    }
+  },
+  {
+    name: "Camp setup",
+    desc: "Top-down view of the van and surroundings. Place barricades, alarms, traps, and lights before sleeping.",
+    color: "var(--blue)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(245,183,49,0.06) 0%,transparent 50%);"></div>' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:30px;background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.4rem;color:var(--blue)">Van</div>' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:180px;height:120px;border:1px dashed rgba(255,255,255,0.08);border-radius:50%"></div>' +
+        '<div style="position:absolute;top:28%;left:35%;width:30px;height:8px;background:rgba(96,165,250,0.2);border:1px solid rgba(96,165,250,0.3);border-radius:2px;font-size:0.35rem;color:var(--blue);display:flex;align-items:center;justify-content:center">Trap</div>' +
+        '<div style="position:absolute;bottom:28%;right:30%;width:35px;height:8px;background:rgba(96,165,250,0.2);border:1px solid rgba(96,165,250,0.3);border-radius:2px;font-size:0.35rem;color:var(--blue);display:flex;align-items:center;justify-content:center">Alarm</div>' +
+        '<div style="position:absolute;bottom:0.75rem;left:50%;transform:translateX(-50%);display:flex;gap:0.4rem">' +
+        ['Barricade','Trap','Alarm','Light','Sleep'].map(function(a) {
+          var isLast = a === 'Sleep';
+          return '<div style="padding:0.25rem 0.6rem;background:'+(isLast?'rgba(212,88,42,0.15)':'rgba(255,255,255,0.05)')+';border:1px solid '+(isLast?'rgba(212,88,42,0.3)':'var(--border)')+';border-radius:4px;font-size:0.5rem;color:'+(isLast?'var(--accent)':'var(--muted)')+';cursor:pointer">'+a+'</div>';
+        }).join('') + '</div>';
+    }
+  },
+  {
+    name: "Night watch",
+    desc: "Passive tower defense. Watch your defenses hold (or fail). Option to wake up and intervene — at a heavy cost.",
+    color: "var(--blue)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:linear-gradient(to top,#0e0e14 0%,#141420 50%,#1a1a30 100%);opacity:0.6"></div>' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:30px;background:rgba(245,183,49,0.1);border:1px solid rgba(245,183,49,0.2);border-radius:4px;box-shadow:0 0 30px rgba(245,183,49,0.08)"></div>' +
+        '<div style="position:absolute;top:30%;left:20%;width:8px;height:8px;background:rgba(232,78,78,0.4);border-radius:50%"></div>' +
+        '<div style="position:absolute;top:45%;right:18%;width:8px;height:8px;background:rgba(232,78,78,0.3);border-radius:50%"></div>' +
+        '<div style="position:absolute;bottom:25%;left:30%;width:8px;height:8px;background:rgba(232,78,78,0.5);border-radius:50%"></div>' +
+        '<div style="position:absolute;top:0.75rem;left:50%;transform:translateX(-50%);font-size:0.55rem;color:var(--faint)">03:42 AM</div>' +
+        '<div style="position:absolute;bottom:0.75rem;left:50%;transform:translateX(-50%);padding:0.3rem 1.2rem;border:1px solid rgba(232,78,78,0.3);background:rgba(232,78,78,0.1);border-radius:5px;font-size:0.55rem;color:var(--accent);cursor:pointer">Wake up (emergency)</div>';
+    }
+  },
+  {
+    name: "Packing puzzle",
+    desc: "At your partner's city. Fit all the boxes into the van Tetris-style. What you place on the bed affects comfort for the return.",
+    color: "var(--teal)",
+    render: function(f) {
+      var html = '<div style="display:flex;width:100%;height:100%;padding:1rem;gap:0.75rem">' +
+        '<div style="flex:2;position:relative;background:rgba(45,212,160,0.04);border:1px solid rgba(45,212,160,0.1);border-radius:8px;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr);gap:2px;padding:4px">';
+      for (var i = 0; i < 24; i++) {
+        var filled = [0,1,2,3,6,7,8,12,13,18].indexOf(i) > -1;
+        html += '<div style="background:rgba('+(filled?'45,212,160,0.15':'255,255,255,0.02')+');border:1px '+(filled?'solid rgba(45,212,160,0.2)':'dashed rgba(255,255,255,0.06)')+';border-radius:2px"></div>';
+      }
+      html += '</div>' +
+        '<div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">' +
+        '<div style="font-size:0.5rem;color:var(--faint);text-transform:uppercase;letter-spacing:0.1em">Items to pack</div>' +
+        ['Books (2x1)','Clothes (2x2)','Kitchen (3x1)','Cat carrier (2x1)','Photos (1x1)'].map(function(item) {
+          return '<div style="padding:0.3rem 0.5rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;font-size:0.5rem;color:var(--muted);cursor:grab">'+item+'</div>';
+        }).join('') +
+        '<div style="margin-top:auto;padding:0.4rem;background:rgba(255,255,255,0.03);border-radius:4px"><div style="font-size:0.45rem;color:var(--faint)">Comfort rating</div><div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:3px"><div style="width:60%;height:100%;background:var(--amber);border-radius:2px;opacity:0.7"></div></div></div>' +
+        '</div></div>';
+      f.innerHTML = html;
+    }
+  },
+  {
+    name: "Content creation",
+    desc: "Photo mode at scenic spots. Choose camera equipment, compose the shot. Posts go to your social feed for income.",
+    color: "var(--coral)",
+    render: function(f) {
+      f.innerHTML = '<div style="position:absolute;inset:0;background:linear-gradient(to top,#1a2018 0%,#2a3828 40%,#4a5548 70%,#886840 100%);opacity:0.3"></div>' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:65%;height:65%;border:2px solid rgba(255,255,255,0.2);border-radius:4px"></div>' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:20px;background:rgba(255,255,255,0.15)"></div>' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:2px;background:rgba(255,255,255,0.15)"></div>' +
+        '<div style="position:absolute;bottom:0.75rem;left:50%;transform:translateX(-50%);display:flex;gap:0.4rem">' +
+        ['Drone','GoPro','360','Phone'].map(function(a,i) {
+          var active = i === 0;
+          return '<div style="padding:0.25rem 0.6rem;background:'+(active?'rgba(212,88,42,0.15)':'rgba(255,255,255,0.05)')+';border:1px solid '+(active?'rgba(212,88,42,0.3)':'var(--border)')+';border-radius:4px;font-size:0.5rem;color:'+(active?'var(--accent)':'var(--muted)')+'">'+a+'</div>';
+        }).join('') +
+        '</div>' +
+        '<div style="position:absolute;top:0.75rem;right:0.75rem;width:60px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:0.4rem;display:flex;flex-direction:column;gap:3px">' +
+        [1,2,3].map(function() { return '<div style="width:100%;aspect-ratio:1;background:rgba(255,255,255,0.06);border-radius:2px"></div>'; }).join('') +
+        '<div style="font-size:0.35rem;color:var(--faint);text-align:center;margin-top:2px">Feed</div></div>';
+    }
+  },
+  {
+    name: "End-game gallery",
+    desc: "Journey complete. A scrapbook of captured photos, journey stats, social media growth. The emotional payoff.",
+    color: "var(--pink)",
+    render: function(f) {
+      var html = '<div style="padding:1.25rem;width:100%;height:100%;display:flex;flex-direction:column">' +
+        '<div style="text-align:center;margin-bottom:0.75rem"><div style="font-size:1.1rem;font-weight:600">Journey complete</div><div style="font-size:0.65rem;color:var(--muted);font-weight:300">Barcelona \u2192 Vilnius \u2192 Barcelona</div></div>' +
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;flex:1;min-height:0">';
+      for (var i = 0; i < 8; i++) {
+        var colors = ['rgba(212,88,42,0.1)','rgba(45,212,160,0.1)','rgba(167,139,250,0.08)','rgba(245,183,49,0.1)','rgba(96,165,250,0.1)','rgba(240,153,123,0.1)','rgba(237,147,177,0.08)','rgba(255,255,255,0.04)'];
+        html += '<div style="background:'+colors[i]+';border:1px solid rgba(255,255,255,0.06);border-radius:4px"></div>';
+      }
+      html += '</div>' +
+        '<div style="display:flex;gap:0.75rem;margin-top:0.75rem;justify-content:center">' +
+        [['2,847 km','Distance'],['6 nights','Survived'],['23 photos','Captured'],['1.2k','Followers']].map(function(s) {
+          return '<div style="text-align:center"><div style="font-size:0.85rem;font-weight:600">'+s[0]+'</div><div style="font-size:0.45rem;color:var(--faint)">'+s[1]+'</div></div>';
+        }).join('') +
+        '</div></div>';
+      f.innerHTML = html;
+    }
+  }
+];
+
+var current = 0;
+
+function render() {
+  var s = screens[current];
+  document.getElementById('topTitle').textContent = s.name;
+  document.getElementById('screenNum').textContent = String(current+1).padStart(2,'0') + ' / ' + screens.length;
+  var f = document.getElementById('screenFrame');
+  f.innerHTML = '';
+  s.render(f);
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === screens.length - 1;
+  var items = document.querySelectorAll('.nav-item');
+  items.forEach(function(el,i) { el.classList.toggle('active', i === current); });
+  var dots = document.getElementById('flowDots');
+  dots.innerHTML = '';
+  for (var i = 0; i < screens.length; i++) {
+    var d = document.createElement('div');
+    d.className = 'flow-dot' + (i === current ? ' active' : '');
+    dots.appendChild(d);
+  }
+}
+
+function goTo(i) { current = i; render(); }
+function next() { if (current < screens.length-1) { current++; render(); } }
+function prev() { if (current > 0) { current--; render(); } }
+
+render();
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+});
+</script>
+</body>
+</html>
