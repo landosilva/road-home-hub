@@ -55,6 +55,15 @@
     padding: 0 1.5rem;
     z-index: 200;
     font-size: 0.82rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .nav-header.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
   }
   .nav-header-title {
     font-weight: 600;
@@ -431,5 +440,11 @@
 
 <div class="footer">Road Home &mdash; Game design project &mdash; March 2026</div>
 
+<script>
+const navHeader = document.querySelector('.nav-header');
+window.addEventListener('scroll', () => {
+  navHeader.classList.toggle('visible', window.scrollY > window.innerHeight * 0.6);
+});
+</script>
 </body>
 </html>
