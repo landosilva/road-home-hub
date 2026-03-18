@@ -8,14 +8,12 @@
 <style>
   :root {
     --bg: #F9F7F3;
-    --bg-card: #FFFFFF;
-    --bg-card-hover: #F5F3EE;
-    --bg-surface: #F1EFE9;
+    --card: #FFFFFF;
+    --surface: #F1EFE9;
     --text: #2C2A25;
-    --text-muted: #6B6862;
-    --text-faint: #A09D96;
+    --muted: #6B6862;
+    --faint: #A09D96;
     --border: #E4E1DA;
-    --border-light: #D8D5CD;
     --accent: #D4582A;
     --accent-glow: rgba(212,88,42,0.08);
     --teal: #1A8F6E;
@@ -26,367 +24,362 @@
     --amber-glow: rgba(184,120,15,0.08);
     --blue: #3B7DD8;
     --blue-glow: rgba(59,125,216,0.08);
-    --red: #D84848;
-    --font: 'Outfit', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font: 'Outfit', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  * { margin:0; padding:0; box-sizing:border-box; }
   body {
     font-family: var(--font);
     background: var(--bg);
     color: var(--text);
-    line-height: 1.7;
-    font-size: 15px;
-    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    height: 100vh;
   }
 
-  ::selection { background: var(--accent); color: #fff; }
-  
-  a { color: var(--accent); }
+  /* === LAYOUT === */
+  .wiki { display: flex; height: 100vh; }
 
-  .page {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 0 2rem 6rem;
-  }
-
-  /* === TAG === */
-
-  .meta-bar {
+  /* === SIDEBAR === */
+  .sidebar {
+    width: 260px;
+    background: var(--card);
+    border-right: 1px solid var(--border);
     display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    padding: 1.25rem 0;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+  .sidebar-header {
+    padding: 1.25rem 1.25rem 0.75rem;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 2.5rem;
   }
-  .meta-chip {
-    font-size: 0.72rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-faint);
-  }
-  .meta-chip strong {
-    color: var(--text);
-    font-weight: 500;
-  }
-  .tags {
-    display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-    margin-left: auto;
-  }
-  .tag {
-    font-size: 0.68rem;
-    font-weight: 600;
-    padding: 0.2rem 0.65rem;
-    border-radius: 4px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  /* === TOC === */
-  .toc {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 3rem;
-  }
-  .toc-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--text-faint);
-    margin-bottom: 0.75rem;
-  }
-  .toc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.15rem 2rem;
-  }
-  @media (max-width: 550px) { .toc-grid { grid-template-columns: 1fr; } }
-  .toc-grid a {
+  .sidebar-header a {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.4rem 0;
+    gap: 0.5rem;
     text-decoration: none;
-    color: var(--text-muted);
-    font-size: 0.88rem;
+    color: var(--faint);
+    font-size: 0.7rem;
     font-weight: 400;
+    margin-bottom: 0.75rem;
     transition: color 0.15s;
   }
-  .toc-grid a:hover { color: var(--accent); }
-  .toc-num {
-    font-family: var(--font-mono);
+  .sidebar-header a:hover { color: var(--accent); }
+  .sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .sidebar-sub {
     font-size: 0.7rem;
-    color: var(--text-faint);
-    min-width: 22px;
+    color: var(--faint);
+    font-weight: 300;
+    margin-top: 0.15rem;
+  }
+  .sidebar-nav {
+    padding: 0.5rem 0;
+    flex: 1;
+  }
+  .sidebar-group-label {
+    padding: 0.75rem 1.25rem 0.3rem;
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--faint);
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 1.25rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--muted);
+    text-decoration: none;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { background: var(--surface); color: var(--text); }
+  .nav-item.active {
+    color: var(--text);
+    font-weight: 500;
+    border-left-color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .nav-num {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--faint);
+    min-width: 1.4rem;
+  }
+  .nav-item.active .nav-num { color: var(--accent); }
+  .sidebar-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.65rem;
+    color: var(--faint);
+    font-weight: 300;
+  }
+
+  /* === MAIN CONTENT === */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+  .content {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2.5rem 3rem 6rem;
   }
 
   /* === SECTIONS === */
   .section {
     margin-bottom: 3.5rem;
+    scroll-margin-top: 2rem;
   }
   .section-header {
     display: flex;
     align-items: baseline;
     gap: 0.75rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
   }
   .section-num {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 600;
     color: var(--accent);
-    flex-shrink: 0;
-    padding-top: 0.15rem;
+    min-width: 1.8rem;
   }
-  .section h2 {
-    font-size: 1.6rem;
+  .section-header h2 {
+    font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: -0.5px;
     line-height: 1.2;
   }
-  .section h3 {
-    font-size: 0.95rem;
+
+  /* === TYPOGRAPHY === */
+  h3 {
+    font-size: 1.05rem;
     font-weight: 600;
-    margin: 1.75rem 0 0.5rem;
+    margin: 1.75rem 0 0.6rem;
+    letter-spacing: -0.2px;
+  }
+  h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  p {
+    font-size: 0.92rem;
+    line-height: 1.8;
+    font-weight: 300;
     color: var(--text);
-  }
-  .section p {
     margin-bottom: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 300;
   }
-  .section ul {
+  ul {
     margin: 0.5rem 0 1rem 1.25rem;
-    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.8;
     font-weight: 300;
   }
-  .section li {
-    margin-bottom: 0.3rem;
-    padding-left: 0.25rem;
+  li { margin-bottom: 0.25rem; }
+  li strong { font-weight: 500; }
+  em { font-style: italic; color: var(--muted); }
+
+  /* === CALLOUTS === */
+  .callout {
+    background: var(--accent-glow);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    font-weight: 300;
   }
-  .section li::marker { color: var(--text-faint); }
-  .section li strong { color: var(--text); font-weight: 500; }
+  .callout strong { font-weight: 500; }
+  .callout.teal { background: var(--teal-glow); border-left-color: var(--teal); }
+  .callout.purple { background: var(--purple-glow); border-left-color: var(--purple); }
+  .callout.blue { background: var(--blue-glow); border-left-color: var(--blue); }
 
   /* === CARDS === */
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    margin: 0.75rem 0;
-    transition: border-color 0.2s;
-  }
-  .card:hover { border-color: var(--border-light); background: var(--bg-card-hover); }
-  .card h4 {
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-faint);
-    margin-bottom: 0.6rem;
-  }
-  .card p, .card li { font-size: 0.9rem; }
-
   .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    gap: 1rem;
+    margin: 1rem 0;
   }
-  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
-
-  /* === LOOP === */
-  .loop {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-    margin: 1.25rem 0;
-  }
-  @media (max-width: 550px) { .loop { grid-template-columns: 1fr 1fr; } }
-  .loop-phase {
-    border-radius: 10px;
-    padding: 1rem 0.75rem;
-    text-align: center;
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
     border: 1px solid var(--border);
-    position: relative;
+    border-radius: 10px;
+    padding: 1.25rem;
   }
-  .loop-icon {
-    font-size: 1.4rem;
-    margin-bottom: 0.35rem;
+  .card ul { margin-left: 1rem; font-size: 0.85rem; }
+
+  /* === LOOP DIAGRAM === */
+  .loop {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+    flex-wrap: wrap;
   }
-  .loop-name {
-    font-weight: 600;
-    font-size: 0.85rem;
-    margin-bottom: 0.15rem;
+  .loop-phase {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 10px;
   }
-  .loop-desc {
-    font-size: 0.75rem;
-    font-weight: 300;
-  }
+  .loop-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+  .loop-name { font-weight: 600; font-size: 0.85rem; }
+  .loop-desc { font-size: 0.72rem; font-weight: 300; margin-top: 0.15rem; }
 
   /* === RESOURCE TABLE === */
   .resource-table {
     width: 100%;
     border-collapse: collapse;
     margin: 1rem 0;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
   }
   .resource-table th {
     text-align: left;
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 0.75rem;
+    font-family: var(--mono);
     font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-faint);
-    border-bottom: 1px solid var(--border);
+    color: var(--faint);
+    border-bottom: 2px solid var(--border);
   }
   .resource-table td {
-    padding: 0.65rem 1rem;
+    padding: 0.6rem 0.75rem;
     border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  .resource-table tr:last-child td { border-bottom: none; }
-  .resource-table tr:hover td { background: var(--bg-surface); }
-  .r-name {
-    font-weight: 500;
-    color: var(--text);
-    white-space: nowrap;
-  }
-  .r-desc { color: var(--text-muted); font-weight: 300; }
-
-  /* === CALLOUT === */
-  .callout {
-    border-left: 3px solid var(--accent);
-    padding: 1rem 1.25rem;
-    margin: 1.25rem 0;
-    background: var(--accent-glow);
-    border-radius: 0 8px 8px 0;
-    font-size: 0.9rem;
-    color: var(--text-muted);
+    line-height: 1.6;
     font-weight: 300;
   }
-  .callout strong { color: var(--text); font-weight: 500; }
-  .callout.teal { border-color: var(--teal); background: var(--teal-glow); }
-  .callout.purple { border-color: var(--purple); background: var(--purple-glow); }
-  .callout.blue { border-color: var(--blue); background: var(--blue-glow); }
+  .r-name { font-weight: 500; white-space: nowrap; width: 120px; }
 
-  /* === DIVIDER === */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 3rem 0;
-  }
-
-  /* === OPEN QUESTIONS === */
-  .q-list { list-style: none; padding: 0; }
+  /* === QUESTIONS === */
+  .q-list { list-style: none; margin-left: 0; }
   .q-list li {
-    padding: 0.6rem 0;
+    padding: 0.5rem 0;
     border-bottom: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-weight: 300;
     display: flex;
-    gap: 0.75rem;
+    gap: 0.6rem;
     align-items: flex-start;
   }
-  .q-list li:last-child { border-bottom: none; }
   .q-mark {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-family: var(--mono);
     font-weight: 600;
     color: var(--amber);
-    background: var(--amber-glow);
-    border-radius: 4px;
-    padding: 0.15rem 0.45rem;
+    font-size: 0.85rem;
     flex-shrink: 0;
-    margin-top: 0.15rem;
   }
 
   /* === VERSION LOG === */
   .version-log {
-    font-size: 0.78rem;
-    color: var(--text-faint);
     margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
   }
-  .version-log table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+  .version-log strong {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faint);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .version-log table { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
   .version-log td {
-    padding: 0.35rem 0;
+    padding: 0.4rem 0.75rem 0.4rem 0;
     border-bottom: 1px solid var(--border);
-    vertical-align: top;
     font-weight: 300;
+    line-height: 1.6;
+    vertical-align: top;
   }
   .version-log td:first-child {
-    font-family: var(--font-mono);
+    font-family: var(--mono);
     font-weight: 500;
+    color: var(--accent);
+    width: 2.5rem;
     white-space: nowrap;
-    width: 50px;
-    color: var(--text-muted);
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  /* === TAG (for header) === */
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
   }
 </style>
-<script>
-document.addEventListener('click', function(e) {
-  var a = e.target.closest('a[href^="#"]');
-  if (!a) return;
-  e.preventDefault();
-  var target = document.querySelector(a.getAttribute('href'));
-  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-</script>
 </head>
 <body>
 
-<div class="page" style="padding-top: 2rem;">
+<div class="wiki">
 
-  <a href="index.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--text-faint);text-decoration:none;margin-bottom:2rem;font-weight:400;">&larr; Back to hub</a>
-
-  <div style="text-align:center; margin-bottom: 1.5rem;">
-    <div style="font-family: var(--mono); font-size: 0.62rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-faint); margin-bottom: 0.5rem;">Game design document</div>
-    <h1 style="font-size: 2.4rem; font-weight: 600; letter-spacing: -1px; line-height: 1.1; margin-bottom: 0.35rem;">Road Home</h1>
-    <p style="font-size: 1rem; font-weight: 300; color: var(--text-muted); font-style: italic; margin-bottom: 1.25rem;">The longest shortcut to where you belong.</p>
-    <div style="display: flex; justify-content: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem;">
-      <span class="tag" style="background:var(--accent-glow);color:var(--accent)">Roguelike</span>
-      <span class="tag" style="background:var(--teal-glow);color:var(--teal)">Driving</span>
-      <span class="tag" style="background:var(--purple-glow);color:var(--purple)">Tower Defense</span>
-      <span class="tag" style="background:var(--amber-glow);color:var(--amber)">Survival</span>
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html">&larr; Back to hub</a>
+      <div class="sidebar-title">Road Home</div>
+      <div class="sidebar-sub">Game Design Document v0.4</div>
     </div>
-    <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.72rem; color: var(--text-faint);">
-      <span>Platform <strong style="color:var(--text);font-weight:500">PC</strong></span>
-      <span>Players <strong style="color:var(--text);font-weight:500">1–2 co-op</strong></span>
-      <span>Version <strong style="color:var(--text);font-weight:500">0.4</strong></span>
-      <span>March 2026</span>
-    </div>
-  </div>
+    <div class="sidebar-nav">
+      <div class="sidebar-group-label">World &amp; story</div>
+      <a class="nav-item active" href="#premise"><span class="nav-num">01</span> Premise &amp; story</a>
+      <a class="nav-item" href="#structure"><span class="nav-num">02</span> Game structure</a>
+      <a class="nav-item" href="#preparation"><span class="nav-num">03</span> Van preparation</a>
 
-  <hr style="border:none;border-top:1px solid var(--border);margin:0 0 2.5rem;">
+      <div class="sidebar-group-label">Gameplay</div>
+      <a class="nav-item" href="#driving"><span class="nav-num">04</span> Driving phase</a>
+      <a class="nav-item" href="#rest-defense"><span class="nav-num">05</span> Rest &amp; defense</a>
+      <a class="nav-item" href="#cargo"><span class="nav-num">06</span> Cargo &amp; return</a>
 
-  <!-- TOC -->
-  <nav class="toc">
-    <div class="toc-label">Contents</div>
-    <div class="toc-grid">
-      <a href="#premise"><span class="toc-num">01</span> Premise &amp; story</a>
-      <a href="#resources"><span class="toc-num">07</span> Resources</a>
-      <a href="#structure"><span class="toc-num">02</span> Game structure</a>
-      <a href="#companion"><span class="toc-num">08</span> Companion &amp; morale</a>
-      <a href="#preparation"><span class="toc-num">03</span> Van preparation</a>
-      <a href="#the-cat"><span class="toc-num">09</span> The cat</a>
-      <a href="#driving"><span class="toc-num">04</span> Driving phase</a>
-      <a href="#content-creation"><span class="toc-num">10</span> Content creation</a>
-      <a href="#rest-defense"><span class="toc-num">05</span> Rest &amp; defense</a>
-      <a href="#roguelike"><span class="toc-num">11</span> Roguelike elements</a>
-      <a href="#cargo"><span class="toc-num">06</span> Cargo &amp; the return</a>
-      <a href="#coop"><span class="toc-num">12</span> Multiplayer co-op</a>
-      <a href="#technical"><span class="toc-num">13</span> Technical notes</a>
+      <div class="sidebar-group-label">Systems</div>
+      <a class="nav-item" href="#resources"><span class="nav-num">07</span> Resources</a>
+      <a class="nav-item" href="#companion"><span class="nav-num">08</span> Companion &amp; morale</a>
+      <a class="nav-item" href="#the-cat"><span class="nav-num">09</span> The cat</a>
+      <a class="nav-item" href="#content-creation"><span class="nav-num">10</span> Content creation</a>
+
+      <div class="sidebar-group-label">Meta</div>
+      <a class="nav-item" href="#roguelike"><span class="nav-num">11</span> Roguelike elements</a>
+      <a class="nav-item" href="#coop"><span class="nav-num">12</span> Multiplayer co-op</a>
+      <a class="nav-item" href="#technical"><span class="nav-num">13</span> Technical notes</a>
+
+      <div class="sidebar-group-label">Appendix</div>
+      <a class="nav-item" href="#open-questions"><span class="nav-num">&mdash;</span> Open questions</a>
     </div>
+    <div class="sidebar-footer">March 2026</div>
   </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main" id="mainContent">
+    <div class="content">
 
   <!-- 01 PREMISE -->
   <div class="section" id="premise">
@@ -904,7 +897,32 @@ document.addEventListener('click', function(e) {
     </table>
   </div>
 
+
+
+    </div>
+  </div>
 </div>
+
+<script>
+// Active nav highlighting on scroll
+const main = document.getElementById('mainContent');
+const navItems = document.querySelectorAll('.nav-item');
+const sections = document.querySelectorAll('.section');
+
+function updateActiveNav() {
+  let current = '';
+  const offset = 120;
+  sections.forEach(s => {
+    if (s.getBoundingClientRect().top < offset) current = s.id;
+  });
+  navItems.forEach(item => {
+    item.classList.toggle('active', item.getAttribute('href') === '#' + current);
+  });
+}
+
+main.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
+</script>
 
 </body>
 </html>
