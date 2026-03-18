@@ -264,16 +264,14 @@
   }
   .story-photo {
     aspect-ratio: 4/3;
-    background: var(--surface);
-    border: 1px solid var(--border);
     border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--faint);
-    font-size: 0.8rem;
-    font-weight: 300;
-    font-style: italic;
+    overflow: hidden;
+  }
+  .story-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .footer {
@@ -357,7 +355,7 @@
         <p>Road Home is based on a true story: a couple who drove a brand new campervan from Barcelona to Vilnius and back — carrying boxes, a cat, a drone, and the kind of trust that only a thousand-mile detour can build. All within a week.</p>
         <p>The game captures the full arc: stocking up essentials at a foreign supermarket as the very first quest, letting her take over the playlist and loving every minute of it, finding the perfect sunset spot for a drone shot, surviving a frozen water system the entire trip, and the quiet relief of finally pulling into Barcelona with everything — and everyone — intact.</p>
       </div>
-      <div class="story-photo">Photo coming soon</div>
+      <div class="story-photo"><img src="images/real-journey-photo.png" alt="The real journey"></div>
     </div>
   </div>
 </div>
