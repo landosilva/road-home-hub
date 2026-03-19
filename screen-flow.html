@@ -65,7 +65,8 @@
     cursor: crosshair;
   }
   .canvas-wrap.dragging { cursor: grabbing; }
-  .canvas-wrap.selecting { cursor: crosshair; }
+  .canvas-wrap.selecting { cursor: crosshair; user-select: none; }
+  .canvas-wrap.selecting * { user-select: none; }
   .canvas-wrap.panning { cursor: grab; }
   .canvas-wrap.panning.dragging { cursor: grabbing; }
 
@@ -928,6 +929,7 @@ function renderCanvas() {
     // Click to play
     div.addEventListener('click', (e) => {
       if (div.classList.contains('dragging-screen')) return;
+      if (multiSelected.size > 0) return; // Don't open play mode when multi-selected
       const idx = project.screens.findIndex(s => s.id === screen.id);
       overlayEl.classList.add('active');
       goTo(idx);
@@ -1518,7 +1520,20 @@ function setupMultiDrag() {
       const onUp = () => {
         window.removeEventListener('mousemove', onMove);
         window.removeEventListener('mouseup', onUp);
-        if (hasMoved) saveProject(project);
+        if (hasMoved) {
+          saveProject(project);
+          // Prevent click from opening play mode after drag
+          multiSelected.forEach(id => {
+            const div = document.getElementById(id);
+            if (div) div.classList.add('dragging-screen');
+          });
+          setTimeout(() => {
+            multiSelected.forEach(id => {
+              const div = document.getElementById(id);
+              if (div) div.classList.remove('dragging-screen');
+            });
+          }, 50);
+        }
       };
 
       window.addEventListener('mousemove', onMove);
