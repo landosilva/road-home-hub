@@ -64,6 +64,22 @@
     cursor: grab;
   }
   .canvas-wrap.dragging { cursor: grabbing; }
+  .canvas-wrap.selecting { cursor: crosshair; }
+
+  /* Selection rectangle */
+  .selection-rect {
+    position: fixed;
+    border: 1.5px solid var(--accent);
+    background: rgba(212,88,42,0.08);
+    pointer-events: none;
+    z-index: 90;
+    border-radius: 2px;
+    display: none;
+  }
+  .screen.multi-selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(212,88,42,0.3), 0 4px 16px rgba(0,0,0,0.08);
+  }
   .canvas {
     position: absolute;
     transform-origin: 0 0;
@@ -870,6 +886,9 @@
   <div id="editPanelContent"></div>
 </div>
 
+<!-- SELECTION RECTANGLE -->
+<div class="selection-rect" id="selectionRect"></div>
+
 <!-- CONTEXT MENU -->
 <div class="ctx-menu" id="ctxMenu">
   <button id="ctxAddScreen">+ Add screen here</button>
@@ -989,7 +1008,10 @@ function setupScreenDrag(div, screen) {
 
   div.addEventListener('mousedown', (e) => {
     if (e.target.closest('.screen-edit-btn')) return;
+    // If multi-selected and this screen is in the selection, let multi-drag handle it
+    if (multiSelected.has(screen.id) && multiSelected.size > 1) return;
     e.stopPropagation();
+    clearMultiSelect();
     dragStartX = e.clientX;
     dragStartY = e.clientY;
     origX = screen.x;
@@ -1423,29 +1445,152 @@ let panX = 0;
 let panY = 0;
 let isDragging = false;
 let startX, startY;
+let spaceHeld = false;
+let multiSelected = new Set();
+
+const selectionRect = document.getElementById('selectionRect');
 
 function applyTransform() {
   canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
   zoomDisplay.textContent = Math.round(scale * 100) + '%';
 }
 
+// Track space key for pan mode
+window.addEventListener('keydown', (e) => { if (e.code === 'Space' && !e.repeat) { spaceHeld = true; wrap.style.cursor = 'grab'; } });
+window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spaceHeld = false; wrap.style.cursor = ''; } });
+
 wrap.addEventListener('mousedown', (e) => {
-  if (e.button !== 0) return;
-  isDragging = true;
-  startX = e.clientX - panX;
-  startY = e.clientY - panY;
-  wrap.classList.add('dragging');
+  // Middle-click or space+click = pan
+  if (e.button === 1 || (e.button === 0 && spaceHeld)) {
+    e.preventDefault();
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+    wrap.classList.add('dragging');
+    return;
+  }
+  // Left-click on empty canvas = selection rectangle
+  if (e.button === 0) {
+    const selStartX = e.clientX;
+    const selStartY = e.clientY;
+    let hasMoved = false;
+
+    const onMove = (e2) => {
+      const dx = e2.clientX - selStartX;
+      const dy = e2.clientY - selStartY;
+      if (!hasMoved && Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+      hasMoved = true;
+      wrap.classList.add('selecting');
+      selectionRect.style.display = 'block';
+      selectionRect.style.left = Math.min(selStartX, e2.clientX) + 'px';
+      selectionRect.style.top = Math.min(selStartY, e2.clientY) + 'px';
+      selectionRect.style.width = Math.abs(dx) + 'px';
+      selectionRect.style.height = Math.abs(dy) + 'px';
+
+      // Live highlight screens that intersect the selection rect
+      const selRect = selectionRect.getBoundingClientRect();
+      canvasEl.querySelectorAll('.screen').forEach(el => {
+        const sr = el.getBoundingClientRect();
+        const intersects = !(sr.right < selRect.left || sr.left > selRect.right ||
+                            sr.bottom < selRect.top || sr.top > selRect.bottom);
+        el.classList.toggle('multi-selected', intersects);
+      });
+    };
+
+    const onUp = (e2) => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      selectionRect.style.display = 'none';
+      wrap.classList.remove('selecting');
+
+      if (hasMoved) {
+        // Collect selected screen ids
+        multiSelected = new Set();
+        canvasEl.querySelectorAll('.screen.multi-selected').forEach(el => {
+          multiSelected.add(el.id);
+        });
+        if (multiSelected.size > 0) {
+          setupMultiDrag();
+        }
+      } else {
+        // Click on empty space = deselect all
+        clearMultiSelect();
+        closeEditPanel();
+      }
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
 });
+// Pan via middle-click or space+drag
 window.addEventListener('mousemove', (e) => {
   if (!isDragging) return;
   panX = e.clientX - startX;
   panY = e.clientY - startY;
   applyTransform();
 });
-window.addEventListener('mouseup', () => {
+window.addEventListener('mouseup', (e) => {
+  if (!isDragging) return;
   isDragging = false;
   wrap.classList.remove('dragging');
 });
+
+function clearMultiSelect() {
+  multiSelected.clear();
+  canvasEl.querySelectorAll('.screen.multi-selected').forEach(el => el.classList.remove('multi-selected'));
+}
+
+function setupMultiDrag() {
+  // Allow dragging the group: listen for mousedown on any multi-selected screen
+  canvasEl.querySelectorAll('.screen.multi-selected').forEach(el => {
+    const handler = (e) => {
+      if (e.target.closest('.screen-edit-btn')) return;
+      if (!multiSelected.has(el.id)) return;
+      e.stopPropagation();
+      const dragStartX = e.clientX;
+      const dragStartY = e.clientY;
+      // Snapshot original positions of all selected screens
+      const origPositions = {};
+      multiSelected.forEach(id => {
+        const s = project.screens.find(s => s.id === id);
+        if (s) origPositions[id] = { x: s.x, y: s.y };
+      });
+      let hasMoved = false;
+
+      const onMove = (e2) => {
+        const dx = (e2.clientX - dragStartX) / scale;
+        const dy = (e2.clientY - dragStartY) / scale;
+        if (!hasMoved && Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+        hasMoved = true;
+        multiSelected.forEach(id => {
+          const s = project.screens.find(s => s.id === id);
+          const div = document.getElementById(id);
+          if (s && div && origPositions[id]) {
+            s.x = Math.round(origPositions[id].x + dx);
+            s.y = Math.round(origPositions[id].y + dy);
+            div.style.left = s.x + 'px';
+            div.style.top = s.y + 'px';
+          }
+        });
+        drawConns();
+      };
+
+      const onUp = () => {
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+        if (hasMoved) saveProject(project);
+      };
+
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    };
+
+    // Store the handler so we can potentially clean up later
+    el._multiDragHandler = handler;
+    el.addEventListener('mousedown', handler);
+  });
+}
 
 wrap.addEventListener('wheel', (e) => {
   e.preventDefault();
