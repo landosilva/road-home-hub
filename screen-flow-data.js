@@ -1,4 +1,7 @@
-{
+// Source of truth for screen flow data.
+// Edit via the dashboard (Save button) or directly here.
+// Commit and deploy to update the live version.
+window.__screenFlowData = {
   "version": 1,
   "screens": [
     {
@@ -128,4 +131,4 @@
     { "from": "s6", "to": "s4" },
     { "from": "s4", "to": "s7" }
   ]
-}
+};

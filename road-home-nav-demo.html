@@ -769,6 +769,7 @@
   <button id="ctxAddScreen">+ Add screen here</button>
 </div>
 
+<script src="screen-flow-data.js"></script>
 <script>
 // ========== DATA LAYER ==========
 // Source of truth: screen-flow-data.json (committed to repo, deployed to everyone)
@@ -797,16 +798,16 @@ function updateDraftIndicator() {
 }
 
 function downloadProjectFile() {
-  const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+  const content = '// Source of truth for screen flow data.\n// Edit via the dashboard (Save button) or directly here.\n// Commit and deploy to update the live version.\nwindow.__screenFlowData = ' + JSON.stringify(project, null, 2) + ';\n';
+  const blob = new Blob([content], { type: 'application/javascript' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'screen-flow-data.json';
+  a.download = 'screen-flow-data.js';
   a.click();
-  // After downloading, clear the draft — the user will replace the file and commit
   discardDraft();
 }
 
-async function initProject() {
+function initProject() {
   // 1. Check for a local draft first
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -815,25 +816,19 @@ async function initProject() {
       if (data && data.version && data.screens) {
         project = data;
         hasDraft = true;
-        boot();
         return;
       }
     }
   } catch(e) {}
 
-  // 2. Fetch from the committed JSON file
-  try {
-    const resp = await fetch('screen-flow-data.json');
-    if (resp.ok) {
-      project = await resp.json();
-      boot();
-      return;
-    }
-  } catch(e) {}
+  // 2. Load from the committed JS file (window.__screenFlowData)
+  if (window.__screenFlowData) {
+    project = JSON.parse(JSON.stringify(window.__screenFlowData)); // deep clone
+    return;
+  }
 
   // 3. Fallback: empty project
   project = { version: 1, screens: [], canvasConnections: [] };
-  boot();
 }
 
 // ========== RENDERING ==========
@@ -1549,6 +1544,7 @@ function boot() {
 
 window.addEventListener('resize', drawConns);
 initProject();
+boot();
 </script>
 </body>
 </html>
