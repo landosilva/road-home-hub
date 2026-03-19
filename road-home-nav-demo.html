@@ -753,7 +753,7 @@
 </div>
 
 <!-- DRAFT ACTIONS -->
-<div class="draft-actions" id="draftActions">
+<div class="draft-actions" id="draftActions" style="display:none">
   <button class="draft-discard" id="discardDraft" title="Reset to original data">↺ Reset</button>
 </div>
 
@@ -822,7 +822,8 @@ function discardDraft() {
 }
 
 function updateDraftIndicator() {
-  // Always visible — no-op now
+  const el = document.getElementById('draftActions');
+  if (el) el.style.display = hasDraft ? 'flex' : 'none';
 }
 
 
