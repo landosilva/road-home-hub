@@ -109,6 +109,13 @@ window.__screenFlowData = {
           "target": "s5",
           "style": "next",
           "popup": null
+        },
+        {
+          "id": "c4-4",
+          "label": "❌ Game Over →",
+          "target": "s8",
+          "style": "default",
+          "popup": null
         }
       ],
       "popups": [
