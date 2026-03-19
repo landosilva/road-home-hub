@@ -128,8 +128,8 @@ window.__screenFlowData = {
       "playDesc": "Cook dinner, set up camp, get ready for the night.",
       "image": "images/van-camp-setup.png",
       "color": "var(--purple)",
-      "x": 671,
-      "y": 813,
+      "x": 708,
+      "y": 803,
       "showMenuBtn": true,
       "connections": [
         {
@@ -150,8 +150,8 @@ window.__screenFlowData = {
       "playDesc": "The night passes in timelapse. Events may interrupt your rest.",
       "image": "images/van-night-watch.png",
       "color": "var(--purple)",
-      "x": 658,
-      "y": 1210,
+      "x": 702,
+      "y": 1220,
       "showMenuBtn": true,
       "connections": [
         {
@@ -172,8 +172,8 @@ window.__screenFlowData = {
       "playDesc": "The trip falls apart. But the pet won't let it end here...",
       "image": "images/van-game-over.png",
       "color": "var(--accent)",
-      "x": -126,
-      "y": 1513,
+      "x": -94,
+      "y": 1507,
       "showMenuBtn": false,
       "connections": [
         {
@@ -194,8 +194,8 @@ window.__screenFlowData = {
       "playDesc": "Your journey, laid out as a visual diary. You made it home.",
       "image": "images/van-arrival-home.png",
       "color": "var(--blue)",
-      "x": 324,
-      "y": 1530,
+      "x": 277,
+      "y": 1518,
       "showMenuBtn": true,
       "connections": [
         {
