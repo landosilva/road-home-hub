@@ -122,6 +122,9 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: none;
   }
   .screen-img .placeholder {
     display: flex;
@@ -226,6 +229,42 @@
     padding: 0.35rem 0.75rem;
     cursor: default;
   }
+
+  /* Draft indicator */
+  .draft-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .draft-label {
+    font-size: 0.65rem;
+    color: var(--amber);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .draft-save, .draft-discard {
+    border: 1px solid var(--border);
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.15s;
+  }
+  .draft-save {
+    color: var(--teal);
+    border-color: var(--teal);
+  }
+  .draft-save:hover { background: var(--teal-soft); }
+  .draft-discard {
+    color: var(--faint);
+    width: 24px; height: 24px;
+    padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .draft-discard:hover { color: var(--accent); border-color: var(--accent); }
 
   /* Toolbar */
   .toolbar {
@@ -713,6 +752,11 @@
 <!-- SHARED NAV HEADER -->
 <div class="nav-header">
   <div class="nav-header-title">Road Home</div>
+  <div class="draft-actions" id="draftActions" style="display:none">
+    <button class="draft-save" id="saveToDisk" title="Download data file to commit">↓ Save</button>
+    <button class="draft-discard" id="discardDraft" title="Discard local edits">✕</button>
+    <span class="draft-label">unsaved changes</span>
+  </div>
   <div class="nav-header-tabs">
     <a href="index.html">Hub</a>
     <span class="sep">·</span>
@@ -744,8 +788,6 @@
   <div class="sep"></div>
   <button class="play-btn" id="playBtn">▶ Play</button>
   <div class="sep"></div>
-  <button id="saveToDisk" title="Download updated JSON to replace in repo" style="display:none;font-size:0.7rem!important;font-weight:500!important;width:auto!important;padding:0 0.7rem!important;color:var(--teal)!important">↓ Save</button>
-  <button id="discardDraft" title="Discard local changes" style="display:none;font-size:0.7rem!important;font-weight:500!important;width:auto!important;padding:0 0.7rem!important;color:var(--faint)!important">✕ Discard</button>
 </div>
 
 <!-- PLAY MODE OVERLAY -->
@@ -791,10 +833,8 @@ function discardDraft() {
 }
 
 function updateDraftIndicator() {
-  const btn = document.getElementById('saveToDisk');
-  if (btn) btn.style.display = hasDraft ? 'flex' : 'none';
-  const discard = document.getElementById('discardDraft');
-  if (discard) discard.style.display = hasDraft ? 'flex' : 'none';
+  const el = document.getElementById('draftActions');
+  if (el) el.style.display = hasDraft ? 'flex' : 'none';
 }
 
 function downloadProjectFile() {
