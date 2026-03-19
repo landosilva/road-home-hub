@@ -328,6 +328,56 @@
     margin: 2rem 0;
   }
 
+  /* === REFERENCES === */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  @media (max-width: 700px) { .ref-grid { grid-template-columns: 1fr; } }
+  .ref-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .ref-card:hover { border-color: var(--accent); }
+  .ref-card img {
+    width: 100%;
+    aspect-ratio: 616/353;
+    object-fit: cover;
+    display: block;
+  }
+  .ref-card-body {
+    padding: 0.75rem 1rem;
+  }
+  .ref-card-body h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    letter-spacing: -0.2px;
+  }
+  .ref-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    font-weight: 500;
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+    margin-right: 0.25rem;
+    margin-bottom: 0.3rem;
+  }
+  .ref-card-body p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-top: 0.3rem;
+  }
+
   /* === TAG === */
   .tag {
     display: inline-block;
@@ -349,18 +399,17 @@
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-sub">Game GDDument v0.5</div>
+      <div class="sidebar-sub">Game GDDument v0.6</div>
     </div>
     <div class="sidebar-nav">
       <div class="sidebar-group-label">World &amp; story</div>
       <a class="nav-item active" href="#premise"><span class="nav-num">01</span> Premise &amp; story</a>
       <a class="nav-item" href="#structure"><span class="nav-num">02</span> Game structure</a>
-      <a class="nav-item" href="#preparation"><span class="nav-num">03</span> Van preparation</a>
+      <a class="nav-item" href="#preparation"><span class="nav-num">03</span> Van &amp; gear</a>
 
       <div class="sidebar-group-label">Gameplay</div>
       <a class="nav-item" href="#driving"><span class="nav-num">04</span> Driving phase</a>
       <a class="nav-item" href="#rest-defense"><span class="nav-num">05</span> Rest &amp; sleep</a>
-      <a class="nav-item" href="#cargo"><span class="nav-num">06</span> Cargo &amp; return</a>
 
       <div class="sidebar-group-label">Systems</div>
       <a class="nav-item" href="#resources"><span class="nav-num">07</span> Resources</a>
@@ -374,6 +423,7 @@
       <a class="nav-item" href="#technical"><span class="nav-num">13</span> Technical notes</a>
 
       <div class="sidebar-group-label">Appendix</div>
+      <a class="nav-item" href="#references"><span class="nav-num">&mdash;</span> References</a>
       <a class="nav-item" href="#open-questions"><span class="nav-num">&mdash;</span> Open questions</a>
     </div>
     <div class="sidebar-footer">March 2026</div>
@@ -410,33 +460,10 @@
       <span class="section-num">02</span>
       <h2>Game structure</h2>
     </div>
-    <p>The game is divided into two legs — outbound and return — with distinct challenges. A full run tells a complete story.</p>
-
-    <div class="two-col">
-      <div class="card">
-        <h4>Leg 1 — Outbound</h4>
-        <ul>
-          <li>Start with a brand new, empty van</li>
-          <li>First task: prepare the van for living</li>
-          <li>Drive to your partner's city</li>
-          <li>Van is light, spacious, fresh</li>
-          <li>Learning the systems, building confidence</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h4>Leg 2 — Return</h4>
-        <ul>
-          <li>Van is now packed with boxes + cat</li>
-          <li>Less space = lower comfort = morale pressure</li>
-          <li>Heavier van = more fuel, slower, harder to handle</li>
-          <li>But you know the road better now</li>
-          <li>Arriving home together = the real reward</li>
-        </ul>
-      </div>
-    </div>
+    <p>Each run is a single journey — drive from your city to your partner's city across Europe. You start with a van, a partner, a pet, and a dream. Whether you make it depends on how well you manage the road, each other, and everything in between.</p>
 
     <h3>Core loop</h3>
-    <p>Each day is about survival. Drive as far as you can, manage your resources, find somewhere to sleep, and hope nothing goes wrong in the night. The goal is simple: reach the destination before the trip falls apart.</p>
+    <p>Each day is about survival. Drive as far as you can, manage your resources, find somewhere to sleep, and hope nothing goes wrong in the night. The goal is simple: reach the destination before morale hits zero.</p>
 
     <div class="loop">
       <div class="loop-phase" style="background:var(--amber-glow);">
@@ -462,21 +489,23 @@
     </div>
 
     <h3>The roguelike frame</h3>
-    <p>This is a roguelike. Your first van is terrible, your first camera is a phone, your gear is minimal. When the trip fails — van breaks down, money runs out, morale collapses — something strange happens. Your pet looks at you with those knowing eyes, and everything rewinds. You're back at the start, but not quite from scratch.</p>
+    <p>This is a roguelike. Your first van is terrible, your first camera is a phone, your gear is minimal. When morale hits zero — the trip is over. Everything feeds into morale: van damage, bad sleep, running out of money, pet escaping, arguments. When it finally breaks, the pet looks at you with those knowing eyes, and everything rewinds. You're back at the start, but not quite from scratch.</p>
     <div class="callout purple">
       <strong>The guardian rewinder:</strong> The pet is more than a companion — it's a mysterious being that refuses to let the story end badly. The couple doesn't know. Only the player shares this secret with the pet. Each run, the pet carries forward what matters: your photos, your reputation, your knowledge of what's out there. On the final successful run, the pet can finally just... be a pet.
     </div>
   </div>
 
-  <!-- 03 VAN PREPARATION -->
+  <!-- 03 VAN & GEAR -->
   <div class="section" id="preparation">
     <div class="section-header">
       <span class="section-num">03</span>
-      <h2>Van preparation</h2>
+      <h2>Van &amp; gear</h2>
     </div>
-    <p>The game begins before the road does. You have a brand new, empty van. Before you can leave, you need to make it liveable — and you won't find everything in your starting city. Part of the fun is buying gear along the way, in different countries, slowly turning a vehicle into a home.</p>
+    <p>There's no preparation phase. After character creation, you're on the road — immediately. Your first van is bare-bones: a bed, a tank of fuel, and not much else. Everything you need, you find along the way. Turning your van from a vehicle into a home is the journey itself.</p>
 
-    <h3>Essential gear categories</h3>
+    <h3>Building your van on the road</h3>
+    <p>Every stop is a chance to upgrade. Shops, markets, and roadside finds fill in the gaps — kitchen gear in a French supermarket, snow chains near the Alps, a solar panel from a camping store in the Baltics. You're always one good find away from a meaningful upgrade.</p>
+
     <div class="two-col">
       <div class="card">
         <h4>Living essentials</h4>
@@ -499,6 +528,9 @@
       </div>
     </div>
 
+    <h3>Builds &amp; playstyle (future direction)</h3>
+    <p>The gear you find and the choices you make shape your playstyle. Over time, this becomes an RPG-like build system — a photography-focused build with top-tier camera gear and a light van, or a survival build with heavy insulation, extra fuel tanks, and repair tools. Each run lets you lean into a different strategy based on what you find and what you prioritize.</p>
+
     <div class="callout teal">
       <strong>Regional availability:</strong> Not everything is available everywhere. Some items can only be found in specific countries or regions — a snow chain shop near the Alps, a cheap camping store in a Baltic town. This encourages exploration and makes each run feel like a shopping adventure across Europe.
     </div>
@@ -514,12 +546,15 @@
     <h3>Goal</h3>
     <p>Cover as much distance as possible toward the destination without wrecking the van or running out of fuel — while keeping everyone alive, fed, and sane.</p>
 
+    <h3>Active driving</h3>
+    <p>Driving is hands-on — not a menu, not a map screen. The player physically steers the van in a toy/arcade style. You dodge slower vehicles, respect faster ones, handle curves and weather. Accidents can happen and they hurt — van damage, morale hits, lost time. It should feel like driving, but playful.</p>
+
     <h3>The pilot</h3>
     <ul>
-      <li>Drives the van — avoiding accidents, potholes, weather hazards</li>
+      <li>Actively drives the van — steering, speed, lane changes</li>
+      <li>Avoids slower cars, respects faster traffic, handles weather hazards</li>
       <li>Manages speed vs. fuel consumption tradeoff</li>
       <li>Keeps conversations going with the partner (affects morale)</li>
-      <li>Monitors energy, hunger, and bathroom needs</li>
     </ul>
 
     <h3>The co-pilot / photographer</h3>
@@ -614,35 +649,6 @@
     <p>Good rest means sharper reflexes, better morale, and sometimes a bonus. Bad rest means sluggish driving, lower morale, and debuffs. No rest at all leads to hallucinations, swerving, and the partner refusing to continue.</p>
   </div>
 
-  <!-- 06 CARGO & THE RETURN -->
-  <div class="section" id="cargo">
-    <div class="section-header">
-      <span class="section-num">06</span>
-      <h2>Cargo &amp; the return</h2>
-    </div>
-    <p>When you arrive at your partner's city, the game shifts. Now you have to pack everything into the van — boxes of belongings, furniture pieces, personal items — and fit them in alongside your living setup. Then drive all the way back.</p>
-
-    <h3>Packing the van</h3>
-    <ul>
-      <li>A spatial puzzle: fit boxes into limited van space</li>
-      <li>Some boxes end up on top of the bed — directly impacts comfort and rest quality</li>
-      <li>Heavier load = more fuel consumption, slower driving, harder handling</li>
-      <li>Poorly packed = things shift and break on rough roads</li>
-    </ul>
-
-    <h3>Return leg differences</h3>
-    <ul>
-      <li><strong>Less space:</strong> the van is cramped. Morale pressure increases. Comfort drops.</li>
-      <li><strong>Heavier:</strong> fuel consumption goes up. The van handles differently.</li>
-      <li><strong>The cat is here now:</strong> adds a whole new resource management layer.</li>
-      <li><strong>But you know the road:</strong> routes you explored on the way there are partially revealed. You have gear and experience.</li>
-      <li><strong>Higher stakes:</strong> you're carrying someone's entire life in the back.</li>
-    </ul>
-
-    <div class="callout teal">
-      <strong>Design intent:</strong> The return should feel fundamentally different from the outbound trip — same systems, but the weight (literal and emotional) changes every decision. Getting home together, with everything intact, is the real victory.
-    </div>
-  </div>
 
   <!-- 07 RESOURCES -->
   <div class="section" id="resources">
@@ -665,9 +671,9 @@
         <tr><td class="r-name">Electricity</td><td class="r-desc">Powers lights, devices, fridge. Solar panels help but aren't always enough. Some vans depend on it more than others.</td></tr>
         <tr><td class="r-name">Food</td><td class="r-desc">Feeds you and your partner. Quality matters — good meals boost morale, snacks just keep you alive.</td></tr>
         <tr><td class="r-name">Camera gear</td><td class="r-desc">Phone (always available), GoPro, drone. Better gear = better photos = more income. Unlocked across runs.</td></tr>
-        <tr><td class="r-name">Van health</td><td class="r-desc">Damaged by driving hazards and rest encounters. At zero, the run is over.</td></tr>
-        <tr><td class="r-name">Money</td><td class="r-desc">Buy everything. Finite — earned through side tasks, scavenging, or content creation.</td></tr>
-        <tr><td class="r-name">Morale</td><td class="r-desc">Both partners. Low morale = navigation penalties, arguments, forced stops.</td></tr>
+        <tr><td class="r-name">Van health</td><td class="r-desc">Damaged by driving hazards and night events. Low health = morale drain. At zero = massive morale hit.</td></tr>
+        <tr><td class="r-name">Money</td><td class="r-desc">Buy everything. Finite — earned through side tasks, scavenging, or content creation. Running out = morale drain.</td></tr>
+        <tr><td class="r-name">Morale</td><td class="r-desc"><strong>The one meter that ends the game.</strong> Everything feeds into it. At zero, the trip is over and the pet rewinds.</td></tr>
         <tr><td class="r-name">Pet supplies</td><td class="r-desc">Species-specific food, waste management supplies. Neglect triggers chaos events and escape attempts.</td></tr>
         <tr><td class="r-name">Gear</td><td class="r-desc">Snow chains, spare tire, tools, curtains, hose. Required for specific challenges.</td></tr>
       </tbody>
@@ -721,12 +727,7 @@
     </div>
 
     <h3>Pet selection</h3>
-    <p>Players choose their pet at the start. Each species has different needs, chaos potential, and rewind flavor:</p>
-    <ul>
-      <li><strong>Cat</strong> — nine lives, literally. Subtle, mysterious. Blinks and time rewinds. Feels like it exists outside of normal rules. Independent but occasionally chaotic.</li>
-      <li><strong>Dog</strong> — loyal, dramatic. Howls at the moment of failure, time cracks and resets. More emotionally expressive — whines near previously dangerous spots, gets excited near good ones.</li>
-      <li><strong>Others (unlockable)</strong> — a parrot that "repeats" the timeline, a turtle that's "been through this before." Each with unique mechanics and personality.</li>
-    </ul>
+    <p>Players choose their pet at the start — cat, dog, or others unlocked over time. The choice is purely cosmetic and emotional. All pets share the same gameplay needs and rewinder role. Pick the one that feels like yours.</p>
 
     <div class="two-col">
       <div class="card">
@@ -786,11 +787,14 @@
     </div>
 
     <h3>Social media feed</h3>
+    <p>Social media is not a side activity — it's your primary source of income. The co-pilot curates posts from the photo gallery, choosing what to publish, when to post, and how to frame the journey. This gives the co-pilot a dedicated task beyond navigation: content manager for the trip.</p>
     <ul>
       <li>Content is posted to an in-game social feed (think Instagram)</li>
-      <li>Posts generate income based on quality, timing, and engagement</li>
-      <li>Managing the feed is an optional side mechanic — post too much and followers disengage, too little and you lose momentum</li>
-      <li>Potential follower milestones unlock perks (sponsors, free gear, campground discounts)</li>
+      <li>Posts generate income based on photo quality, timing, and engagement</li>
+      <li>The co-pilot selects photos from the gallery, writes captions, and schedules posts</li>
+      <li>Post frequency matters — too much and followers disengage, too little and you lose momentum</li>
+      <li>Follower milestones unlock perks: sponsors, free gear, campground discounts, better camera access</li>
+      <li>Income from posts is the main way to buy fuel, food, and gear — money doesn't come from nowhere</li>
     </ul>
 
     <h3>End-game gallery</h3>
@@ -835,13 +839,15 @@
         </ul>
       </div>
       <div class="card">
-        <h4>Failure states</h4>
+        <h4>Single fail state: morale</h4>
         <ul>
-          <li>Van health reaches zero — stranded</li>
-          <li>Money runs out — can't refuel or eat</li>
-          <li>Morale collapses — partner refuses to continue</li>
-          <li>Too many sleepless nights — can't drive safely</li>
-          <li>Pet escapes and can't be found — heartbreak ending</li>
+          <li>Morale is the one meter that ends the game</li>
+          <li>Van damage → morale hit</li>
+          <li>Bad sleep → morale hit</li>
+          <li>Running out of money → morale hit</li>
+          <li>Pet escapes → massive morale hit</li>
+          <li>Arguments, cold meals, fatigue → morale drains</li>
+          <li>When morale reaches zero, the trip is over</li>
         </ul>
       </div>
     </div>
@@ -859,7 +865,7 @@
       <span class="section-num">12</span>
       <h2>Multiplayer co-op</h2>
     </div>
-    <p>The game supports 2-player co-op — both local and online — splitting responsibilities between pilot and co-pilot, just like a real road trip.</p>
+    <p>Co-op is the soul of the game. Road Home is designed co-op first — every system, every role split, every moment is built around two people sharing the experience. Single-player exists, but the game is meant to be played together, just like a real road trip.</p>
 
     <h3>Shared camera</h3>
     <p>Both players share the same camera view — no split screen. You're in the same van, looking at the same road. The co-pilot interacts through UI overlays (map, resource panels, radio) layered on top of the shared view. This keeps the feeling intimate and grounded — you're on this trip <em>together</em>.</p>
@@ -892,16 +898,119 @@
     <ul>
       <li>Local co-op (same screen, two controllers or keyboard + controller)</li>
       <li>Online co-op (same shared camera, streamed to both players)</li>
-      <li>Single-player: AI controls the co-pilot with adjustable autonomy</li>
+      <li>Single-player: AI controls the co-pilot with adjustable autonomy (not the primary target)</li>
     </ul>
 
     <h3>Character customization</h3>
-    <p>At the start of a new run, players customize:</p>
+    <p>The only pre-road screen. Players customize, then immediately start driving:</p>
     <ul>
       <li><strong>Characters</strong> — appearance, sex, name for both the pilot and the companion</li>
       <li><strong>Van</strong> — choose from unlocked van types (starter van at first, more unlocked via meta-progression). Each van has different stats: fuel efficiency, space, durability, built-in systems.</li>
-      <li><strong>Pet</strong> — the cat is the default, but other pets could be unlockable (dog, bird, etc.) — each with different needs, chaos potential, and charm.</li>
+      <li><strong>Pet</strong> — cat, dog, or others unlockable over time. Purely cosmetic — all pets share the same gameplay needs.</li>
     </ul>
+  </div>
+
+  <hr class="divider">
+
+  <!-- REFERENCES -->
+  <div class="section" id="references">
+    <div class="section-header">
+      <span class="section-num">—</span>
+      <h2>References</h2>
+    </div>
+    <p>Games that inform different aspects of Road Home's design. Each reference maps to a specific pillar — not a wholesale inspiration, but a targeted lesson.</p>
+
+    <h3>Driving &amp; exploration</h3>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/446020/capsule_616x353.jpg" alt="Jalopy">
+        <div class="ref-card-body">
+          <h4>Jalopy</h4>
+          <div><span class="ref-tag" style="background:var(--amber-glow);color:var(--amber);">Driving</span><span class="ref-tag" style="background:var(--teal-glow);color:var(--teal);">Van life</span></div>
+          <p>The feeling of nursing a terrible car across a long road. Breakdowns, roadside repairs, the joy of finding parts. The toy-style driving feel we're after.</p>
+        </div>
+      </div>
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/757310/capsule_616x353.jpg" alt="Sable">
+        <div class="ref-card-body">
+          <h4>Sable</h4>
+          <div><span class="ref-tag" style="background:var(--amber-glow);color:var(--amber);">Exploration</span><span class="ref-tag" style="background:var(--purple-glow);color:var(--purple);">Tone</span></div>
+          <p>Open-world exploration where the journey IS the point. The mood, the quiet, the sense of discovery. The emotional texture of traveling alone through beautiful landscapes.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Photography</h3>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1307580/capsule_616x353.jpg" alt="TOEM">
+        <div class="ref-card-body">
+          <h4>TOEM</h4>
+          <div><span class="ref-tag" style="background:var(--teal-glow);color:var(--teal);">Photography</span><span class="ref-tag" style="background:var(--purple-glow);color:var(--purple);">Cozy</span></div>
+          <p>Photography as core gameplay — not a gimmick but the whole verb. Finding subjects, framing shots, and the satisfaction of a perfect capture. The scoring system draws from this.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Co-op &amp; audience</h3>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/448510/capsule_616x353.jpg" alt="Overcooked">
+        <div class="ref-card-body">
+          <h4>Overcooked</h4>
+          <div><span class="ref-tag" style="background:var(--accent-glow);color:var(--accent);">Co-op</span><span class="ref-tag" style="background:var(--amber-glow);color:var(--amber);">Audience</span></div>
+          <p>The target audience. Couples and friends who want accessible, collaborative gameplay that creates shared stories and fun arguments.</p>
+        </div>
+      </div>
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1426210/capsule_616x353.jpg" alt="It Takes Two">
+        <div class="ref-card-body">
+          <h4>It Takes Two</h4>
+          <div><span class="ref-tag" style="background:var(--accent-glow);color:var(--accent);">Co-op</span><span class="ref-tag" style="background:var(--purple-glow);color:var(--purple);">Roles</span></div>
+          <p>Asymmetric co-op where both players have different abilities and both are essential. The role split (pilot/photographer) draws from this philosophy.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Roguelike structure</h3>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1145360/capsule_616x353.jpg" alt="Hades">
+        <div class="ref-card-body">
+          <h4>Hades</h4>
+          <div><span class="ref-tag" style="background:var(--accent-glow);color:var(--accent);">Roguelike</span><span class="ref-tag" style="background:var(--purple-glow);color:var(--purple);">Narrative</span></div>
+          <p>Roguelike death as narrative progression. Each run teaches and reveals more story. The pet rewinder draws from this — failure isn't punishment, it's the next chapter.</p>
+        </div>
+      </div>
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/212680/capsule_616x353.jpg" alt="FTL">
+        <div class="ref-card-body">
+          <h4>FTL: Faster Than Light</h4>
+          <div><span class="ref-tag" style="background:var(--accent-glow);color:var(--accent);">Roguelike</span><span class="ref-tag" style="background:var(--teal-glow);color:var(--teal);">Resources</span></div>
+          <p>Resource management under pressure across a procedural map. The tight fuel/food/money loop and the "one more stop" tension. The structure of a journey as a roguelike run.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Tone &amp; cozy exploration</h3>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1055540/capsule_616x353.jpg" alt="A Short Hike">
+        <div class="ref-card-body">
+          <h4>A Short Hike</h4>
+          <div><span class="ref-tag" style="background:var(--teal-glow);color:var(--teal);">Cozy</span><span class="ref-tag" style="background:var(--amber-glow);color:var(--amber);">Exploration</span></div>
+          <p>Warm, inviting exploration where every corner has something small and delightful. The feeling that the world rewards curiosity — not completionism.</p>
+        </div>
+      </div>
+      <div class="ref-card">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/839870/capsule_616x353.jpg" alt="Wilmot's Warehouse">
+        <div class="ref-card-body">
+          <h4>Wilmot's Warehouse</h4>
+          <div><span class="ref-tag" style="background:var(--blue-glow);color:var(--blue);">Organization</span><span class="ref-tag" style="background:var(--accent-glow);color:var(--accent);">Co-op</span></div>
+          <p>The satisfaction of organizing a shared space under pressure. Van storage, resource management, and the collaborative puzzle of fitting everything in.</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <hr class="divider">
@@ -919,18 +1028,15 @@
       <li><span class="q-mark">?</span> How does the procedural map generation work? Node-based paths or open 2D terrain?</li>
       <li><span class="q-mark">?</span> What's the art style? Pixel art, hand-drawn, low-poly 3D, illustrated?</li>
       <li><span class="q-mark">?</span> How does the sleep timelapse work interactively? Can you fast-forward? How are events presented?</li>
-      <li><span class="q-mark">?</span> How does the pet rewinder manifest visually? Subtle or dramatic? Does it change per species?</li>
-      <li><span class="q-mark">?</span> How long is a single run in real-time? Each leg 2 hours? Total 4 hours?</li>
-      <li><span class="q-mark">?</span> How does the packing puzzle work mechanically? Tetris-style? Drag and drop?</li>
+      <li><span class="q-mark">?</span> How does the pet rewinder manifest visually? Subtle or dramatic?</li>
+      <li><span class="q-mark">?</span> How long is a single run in real-time?</li>
       <li><span class="q-mark">?</span> How does the music/radio mechanic work? Mood matching? Morale effect? Genre preferences per character?</li>
       <li><span class="q-mark">?</span> How does the photo scoring system work technically? Real-time detection or preset compositions?</li>
-      <li><span class="q-mark">?</span> How does the temperature system work mechanically? Is it a continuous simulation or event-based?</li>
-      <li><span class="q-mark">?</span> How does thawing frozen water systems work? Time + heat source? A minigame? An automatic penalty?</li>
-      <li><span class="q-mark">?</span> How do different van types handle cold? Insulation as a stat?</li>
-      <li><span class="q-mark">?</span> How do cat escape events play out mechanically? QTE? A chase minigame? A timed search?</li>
-      <li><span class="q-mark">?</span> What role does the cat play during driving? Distraction events? Lap sitting = morale boost?</li>
-      <li><span class="q-mark">?</span> What unlockable pets are there beyond the cat? How do their mechanics differ?</li>
+      <li><span class="q-mark">?</span> How does the temperature system work mechanically? Continuous simulation or event-based?</li>
+      <li><span class="q-mark">?</span> How do pet escape events play out mechanically? QTE? A chase minigame? A timed search?</li>
       <li><span class="q-mark">?</span> How does the co-pilot's UI work on the shared camera? Overlay panels? Radial menus?</li>
+      <li><span class="q-mark">?</span> How does the build/RPG system work? Skill trees? Passive perks? Gear-based stats?</li>
+      <li><span class="q-mark">?</span> How does the social media posting mechanic feel? A separate screen? Quick menu during rest? Real-time engagement?</li>
     </ul>
   </div>
 
@@ -944,6 +1050,7 @@
       <tr><td>0.3</td><td>Major expansion from real story context. Two-leg structure, van preparation, cargo system, expanded resources, passive TD, content creation, co-pilot role detail.</td></tr>
       <tr><td>0.4</td><td>Weather &amp; temperature as core system (freezing water, ice roads, snow, heat). Cat escape events with injury consequences. Technical notes: shared camera (no split screen), local + online co-op, character/van/pet customization. Updated open questions.</td></tr>
       <tr><td>0.5</td><td>Major redesign: tower defense removed, replaced with sleep timelapse + location-based night events. Pet becomes guardian rewinder (roguelike narrative frame). Photo scoring system (rarity, synergy, angle, framing). Camera role split — co-pilot as dedicated photographer. Pet generalized beyond cat (dog, unlockables). Roguelike progression reframed around pet's protection.</td></tr>
+      <tr><td>0.6</td><td>Structural cleanup: two-leg structure removed (single journey only). Active driving (toy/arcade). Single fail state (morale = 0). No preparation phase — gear found on the road. Builds &amp; RPG playstyle direction. Social media elevated to primary income source &amp; co-pilot task. Co-op first philosophy. Van preparation → Van &amp; gear. Cargo &amp; return section removed. Pet choice cosmetic only. References section with game inspirations. Cleaned open questions.</td></tr>
     </table>
   </div>
 
