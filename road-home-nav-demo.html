@@ -743,6 +743,9 @@
   <button id="resetView" title="Reset">↺</button>
   <div class="sep"></div>
   <button class="play-btn" id="playBtn">▶ Play</button>
+  <div class="sep"></div>
+  <button id="saveToDisk" title="Download updated JSON to replace in repo" style="display:none;font-size:0.7rem!important;font-weight:500!important;width:auto!important;padding:0 0.7rem!important;color:var(--teal)!important">↓ Save</button>
+  <button id="discardDraft" title="Discard local changes" style="display:none;font-size:0.7rem!important;font-weight:500!important;width:auto!important;padding:0 0.7rem!important;color:var(--faint)!important">✕ Discard</button>
 </div>
 
 <!-- PLAY MODE OVERLAY -->
@@ -768,128 +771,70 @@
 
 <script>
 // ========== DATA LAYER ==========
-const STORAGE_KEY = 'roadhome-screenflow';
+// Source of truth: screen-flow-data.json (committed to repo, deployed to everyone)
+// localStorage is a draft buffer for local edits before saving back to the file.
+const STORAGE_KEY = 'roadhome-screenflow-draft';
+let project = null;
+let hasDraft = false;
 
-function defaultProject() {
-  return {
-    version: 1,
-    screens: [
-      {
-        id: 's1', num: 1, title: 'Intro',
-        subtitle: 'Animated title sequence with the van driving into the sunset.',
-        playDesc: 'The van drives into the sunset. A journey begins.',
-        image: 'images/van-sunset-road.jpg',
-        color: 'var(--accent)', x: 80, y: 80, showMenuBtn: false,
-        connections: [
-          { id: 'c1-1', label: 'Start →', target: 's2', style: 'next', popup: null }
-        ],
-        popups: []
-      },
-      {
-        id: 's2', num: 2, title: 'Main menu',
-        subtitle: 'New game, continue, settings, credits. The hub you return to.',
-        playDesc: 'New game, continue, settings, credits.',
-        image: 'images/van-driving-back.png',
-        color: 'var(--accent)', x: 80, y: 420, showMenuBtn: false,
-        connections: [
-          { id: 'c2-1', label: '▶ Continue →', target: 's4', style: 'default', popup: null },
-          { id: 'c2-2', label: 'New Game →', target: 's3', style: 'next', popup: null }
-        ],
-        popups: []
-      },
-      {
-        id: 's3', num: 3, title: 'Character creation',
-        subtitle: 'Customize both characters, choose van type and pet.',
-        playDesc: 'Customize characters, van, and pet.',
-        image: 'images/van-character-creation.png',
-        color: 'var(--teal)', x: 80, y: 760, showMenuBtn: true,
-        connections: [
-          { id: 'c3-1', label: 'Hit the road →', target: 's4', style: 'next', popup: null }
-        ],
-        popups: []
-      },
-      {
-        id: 's4', num: 4, title: 'Driving',
-        subtitle: 'The core experience. Map, stops, exploration all happen here.',
-        playDesc: 'The open road. Navigate, explore, manage resources.',
-        image: 'images/van-driving-road.png',
-        color: 'var(--amber)', x: 80, y: 1100, showMenuBtn: true,
-        connections: [
-          { id: 'c4-1', label: '🗺 Map', target: null, style: 'default', popup: 'popup-map' },
-          { id: 'c4-2', label: '🏠 You\'re home →', target: 's7', style: 'teal', popup: null },
-          { id: 'c4-3', label: 'Find a spot to rest →', target: 's5', style: 'next', popup: null }
-        ],
-        popups: [
-          { id: 'popup-map', title: 'Map', image: 'images/van-map.png', aspectRatio: '4/3' }
-        ]
-      },
-      {
-        id: 's5', num: 5, title: 'Camp setup',
-        subtitle: 'Place defenses, cook dinner, prepare for the night.',
-        playDesc: 'Set up defenses, cook dinner, get ready for the night.',
-        image: 'images/van-camp-setup.png',
-        color: 'var(--purple)', x: 500, y: 1100, showMenuBtn: true,
-        connections: [
-          { id: 'c5-1', label: 'Go to sleep →', target: 's6', style: 'next', popup: null }
-        ],
-        popups: []
-      },
-      {
-        id: 's6', num: 6, title: 'Night watch',
-        subtitle: 'Passive tower defense. Watch your defenses hold or fail.',
-        playDesc: 'Passive defense. Watch your barricades hold — or fail.',
-        image: 'images/van-night-watch.png',
-        color: 'var(--purple)', x: 500, y: 1440, showMenuBtn: true,
-        connections: [
-          { id: 'c6-1', label: 'Morning — drive on →', target: 's4', style: 'next', popup: null }
-        ],
-        popups: []
-      },
-      {
-        id: 's7', num: 7, title: 'End-game gallery',
-        subtitle: 'Visual diary of the journey. Photos, stats, moments.',
-        playDesc: 'Your journey, laid out as a visual diary. You made it home.',
-        image: 'images/van-arrival-home.png',
-        color: 'var(--blue)', x: 80, y: 1600, showMenuBtn: true,
-        connections: [
-          { id: 'c7-1', label: 'Play again ↺', target: 's1', style: 'next', popup: null }
-        ],
-        popups: []
-      }
-    ],
-    canvasConnections: [
-      { from: 's1', to: 's2' },
-      { from: 's2', to: 's3' },
-      { from: 's3', to: 's4' },
-      { from: 's4', to: 's5' },
-      { from: 's5', to: 's6' },
-      { from: 's6', to: 's4' },
-      { from: 's4', to: 's7' }
-    ]
-  };
+function saveProject(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  hasDraft = true;
+  updateDraftIndicator();
 }
 
-function loadProject() {
+function discardDraft() {
+  localStorage.removeItem(STORAGE_KEY);
+  hasDraft = false;
+  updateDraftIndicator();
+}
+
+function updateDraftIndicator() {
+  const btn = document.getElementById('saveToDisk');
+  if (btn) btn.style.display = hasDraft ? 'flex' : 'none';
+  const discard = document.getElementById('discardDraft');
+  if (discard) discard.style.display = hasDraft ? 'flex' : 'none';
+}
+
+function downloadProjectFile() {
+  const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'screen-flow-data.json';
+  a.click();
+  // After downloading, clear the draft — the user will replace the file and commit
+  discardDraft();
+}
+
+async function initProject() {
+  // 1. Check for a local draft first
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw);
-      if (data && data.version && data.screens) return data;
+      if (data && data.version && data.screens) {
+        project = data;
+        hasDraft = true;
+        boot();
+        return;
+      }
     }
   } catch(e) {}
-  return defaultProject();
-}
 
-function saveProject(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
+  // 2. Fetch from the committed JSON file
+  try {
+    const resp = await fetch('screen-flow-data.json');
+    if (resp.ok) {
+      project = await resp.json();
+      boot();
+      return;
+    }
+  } catch(e) {}
 
-function resetProject() {
-  localStorage.removeItem(STORAGE_KEY);
-  return defaultProject();
+  // 3. Fallback: empty project
+  project = { version: 1, screens: [], canvasConnections: [] };
+  boot();
 }
-
-let project = loadProject();
 
 // ========== RENDERING ==========
 const canvasEl = document.getElementById('canvas');
@@ -1588,27 +1533,22 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ========== INIT ==========
-renderCanvas();
-renderPlayMode();
-focusScreen(project.screens[0]?.id || 's1');
-window.addEventListener('resize', drawConns);
-
-// Export/Import
-window.exportProject = () => {
-  const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'road-home-screenflow.json';
-  a.click();
-};
-window.resetToDefaults = () => {
-  if (!confirm('Reset all screens to defaults? This cannot be undone.')) return;
-  project = resetProject();
+function boot() {
   renderCanvas();
   renderPlayMode();
-  closeEditPanel();
-  focusScreen('s1');
-};
+  focusScreen(project.screens[0]?.id || 's1');
+  updateDraftIndicator();
+
+  document.getElementById('saveToDisk').addEventListener('click', downloadProjectFile);
+  document.getElementById('discardDraft').addEventListener('click', () => {
+    if (!confirm('Discard local edits and reload from the deployed file?')) return;
+    discardDraft();
+    location.reload();
+  });
+}
+
+window.addEventListener('resize', drawConns);
+initProject();
 </script>
 </body>
 </html>
