@@ -254,6 +254,70 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
   .draft-discard:hover { color: var(--accent); border-color: var(--accent); }
+  .draft-save { color: var(--teal); border-color: var(--teal); font-weight: 500; }
+  .draft-save:hover { color: var(--card); background: var(--teal); }
+
+  /* History panel */
+  .history-panel {
+    position: fixed;
+    top: 58px;
+    right: 1rem;
+    width: 320px;
+    max-height: 400px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    z-index: 200;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .history-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-panel-header h3 { font-size: 0.85rem; font-weight: 600; }
+  .history-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 0.5rem;
+  }
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    transition: background 0.15s;
+  }
+  .history-item:hover { background: var(--surface); }
+  .history-item-date { color: var(--muted); font-weight: 400; }
+  .history-item-screens { color: var(--faint); font-size: 0.65rem; }
+  .history-item-actions { display: flex; gap: 0.35rem; }
+  .history-item-actions button {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.15s;
+    color: var(--muted);
+  }
+  .history-item-actions button:hover { color: var(--accent); border-color: var(--accent); }
+  .history-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--faint);
+    font-size: 0.8rem;
+    font-weight: 300;
+  }
 
   /* Toolbar */
   .toolbar {
@@ -754,7 +818,18 @@
 
 <!-- DRAFT ACTIONS -->
 <div class="draft-actions" id="draftActions" style="display:none">
+  <button class="draft-discard draft-save" id="saveDraft" title="Save to file (replaces screen-flow-data.js)">💾 Save</button>
+  <button class="draft-discard" id="historyBtn" title="Version history">🕐 History</button>
   <button class="draft-discard" id="discardDraft" title="Reset to original data">↺ Reset</button>
+</div>
+
+<!-- HISTORY PANEL -->
+<div class="history-panel" id="historyPanel" style="display:none">
+  <div class="history-panel-header">
+    <h3>Version History</h3>
+    <button class="edit-panel-close" id="historyClose">✕</button>
+  </div>
+  <div class="history-list" id="historyList"></div>
 </div>
 
 <!-- CANVAS -->
@@ -1547,6 +1622,83 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(playIdx + 1); }
 });
 
+// ========== HISTORY ==========
+const HISTORY_KEY = 'roadhome-screenflow-history';
+const MAX_HISTORY = 20;
+
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+function pushHistory(data, label) {
+  const history = getHistory();
+  history.unshift({
+    timestamp: new Date().toISOString(),
+    label: label || 'Save',
+    screenCount: data.screens?.length || 0,
+    data: JSON.parse(JSON.stringify(data))
+  });
+  if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const history = getHistory();
+  if (!history.length) {
+    list.innerHTML = '<div class="history-empty">No saved versions yet.</div>';
+    return;
+  }
+  list.innerHTML = history.map((entry, i) => {
+    const d = new Date(entry.timestamp);
+    const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    return `<div class="history-item">
+      <div>
+        <div class="history-item-date">${date}</div>
+        <div class="history-item-screens">${entry.screenCount} screens · ${entry.label}</div>
+      </div>
+      <div class="history-item-actions">
+        <button data-idx="${i}" class="history-restore">Restore</button>
+        <button data-idx="${i}" class="history-download">↓</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('.history-restore').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const entry = history[parseInt(btn.dataset.idx)];
+      if (!confirm('Restore this version? Current draft will be replaced.')) return;
+      project = JSON.parse(JSON.stringify(entry.data));
+      saveProject(project);
+      renderCanvas();
+      renderPlayMode();
+      document.getElementById('historyPanel').style.display = 'none';
+    });
+  });
+
+  list.querySelectorAll('.history-download').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const entry = history[parseInt(btn.dataset.idx)];
+      downloadAsFile(entry.data);
+    });
+  });
+}
+
+function downloadAsFile(data) {
+  const jsContent = '// Source of truth for screen flow data.\n'
+    + '// Edit via the dashboard (Save button) or directly here.\n'
+    + '// Commit and deploy to update the live version.\n'
+    + 'window.__screenFlowData = ' + JSON.stringify(data, null, 2) + ';\n';
+  const blob = new Blob([jsContent], { type: 'application/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'screen-flow-data.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 // ========== INIT ==========
 function boot() {
   renderCanvas();
@@ -1554,6 +1706,27 @@ function boot() {
   focusScreen(project.screens[0]?.id || 's1');
   updateDraftIndicator();
 
+  // Save: snapshot history + download file
+  document.getElementById('saveDraft').addEventListener('click', () => {
+    pushHistory(project, 'Manual save');
+    downloadAsFile(project);
+    // Clear draft since we're "saving" to file
+    discardDraft();
+    renderHistory();
+  });
+
+  // History toggle
+  const historyPanel = document.getElementById('historyPanel');
+  document.getElementById('historyBtn').addEventListener('click', () => {
+    const showing = historyPanel.style.display !== 'none';
+    historyPanel.style.display = showing ? 'none' : 'flex';
+    if (!showing) renderHistory();
+  });
+  document.getElementById('historyClose').addEventListener('click', () => {
+    historyPanel.style.display = 'none';
+  });
+
+  // Reset
   document.getElementById('discardDraft').addEventListener('click', () => {
     if (!confirm('Reset to original data? Local edits will be lost.')) return;
     discardDraft();
