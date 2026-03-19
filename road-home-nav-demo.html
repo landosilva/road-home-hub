@@ -230,40 +230,30 @@
     cursor: default;
   }
 
-  /* Draft indicator */
+  /* Draft actions */
   .draft-actions {
+    position: fixed;
+    top: 58px;
+    right: 1rem;
     display: flex;
     align-items: center;
     gap: 0.35rem;
-  }
-  .draft-label {
-    font-size: 0.65rem;
-    color: var(--amber);
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    z-index: 150;
   }
   .draft-save, .draft-discard {
     border: 1px solid var(--border);
-    background: transparent;
-    border-radius: 6px;
+    background: var(--card);
+    border-radius: 8px;
     cursor: pointer;
     font-family: var(--font);
-    font-size: 0.7rem;
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 400;
+    padding: 0.4rem 0.7rem;
     transition: all 0.15s;
+    color: var(--muted);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
-  .draft-save {
-    color: var(--teal);
-    border-color: var(--teal);
-  }
-  .draft-save:hover { background: var(--teal-soft); }
-  .draft-discard {
-    color: var(--faint);
-    width: 24px; height: 24px;
-    padding: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .draft-save:hover { color: var(--teal); border-color: var(--teal); }
   .draft-discard:hover { color: var(--accent); border-color: var(--accent); }
 
   /* Toolbar */
@@ -752,11 +742,6 @@
 <!-- SHARED NAV HEADER -->
 <div class="nav-header">
   <div class="nav-header-title">Road Home</div>
-  <div class="draft-actions" id="draftActions" style="display:none">
-    <button class="draft-save" id="saveToDisk" title="Download data file to commit">↓ Save</button>
-    <button class="draft-discard" id="discardDraft" title="Discard local edits">✕</button>
-    <span class="draft-label">unsaved changes</span>
-  </div>
   <div class="nav-header-tabs">
     <a href="index.html">Hub</a>
     <span class="sep">·</span>
@@ -766,6 +751,12 @@
     <span class="sep">·</span>
     <span class="nav-tab-locked">Demo 🔒</span>
   </div>
+</div>
+
+<!-- DRAFT ACTIONS -->
+<div class="draft-actions" id="draftActions">
+  <button class="draft-save" id="saveToDisk" title="Download data file to commit">↓ Save</button>
+  <button class="draft-discard" id="discardDraft" title="Discard local edits">↺ Discard</button>
 </div>
 
 <!-- CANVAS -->
@@ -833,8 +824,7 @@ function discardDraft() {
 }
 
 function updateDraftIndicator() {
-  const el = document.getElementById('draftActions');
-  if (el) el.style.display = hasDraft ? 'flex' : 'none';
+  // Always visible — no-op now
 }
 
 function downloadProjectFile() {
