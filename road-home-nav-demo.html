@@ -240,7 +240,7 @@
     gap: 0.35rem;
     z-index: 150;
   }
-  .draft-save, .draft-discard {
+  .draft-discard {
     border: 1px solid var(--border);
     background: var(--card);
     border-radius: 8px;
@@ -253,7 +253,6 @@
     color: var(--muted);
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
-  .draft-save:hover { color: var(--teal); border-color: var(--teal); }
   .draft-discard:hover { color: var(--accent); border-color: var(--accent); }
 
   /* Toolbar */
@@ -755,8 +754,7 @@
 
 <!-- DRAFT ACTIONS -->
 <div class="draft-actions" id="draftActions">
-  <button class="draft-save" id="saveToDisk" title="Download data file to commit">↓ Save</button>
-  <button class="draft-discard" id="discardDraft" title="Discard local edits">↺ Discard</button>
+  <button class="draft-discard" id="discardDraft" title="Reset to original data">↺ Reset</button>
 </div>
 
 <!-- CANVAS -->
@@ -827,15 +825,6 @@ function updateDraftIndicator() {
   // Always visible — no-op now
 }
 
-function downloadProjectFile() {
-  const content = '// Source of truth for screen flow data.\n// Edit via the dashboard (Save button) or directly here.\n// Commit and deploy to update the live version.\nwindow.__screenFlowData = ' + JSON.stringify(project, null, 2) + ';\n';
-  const blob = new Blob([content], { type: 'application/javascript' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'screen-flow-data.js';
-  a.click();
-  discardDraft();
-}
 
 function initProject() {
   // 1. Check for a local draft first
@@ -1564,9 +1553,8 @@ function boot() {
   focusScreen(project.screens[0]?.id || 's1');
   updateDraftIndicator();
 
-  document.getElementById('saveToDisk').addEventListener('click', downloadProjectFile);
   document.getElementById('discardDraft').addEventListener('click', () => {
-    if (!confirm('Discard local edits and reload from the deployed file?')) return;
+    if (!confirm('Reset to original data? Local edits will be lost.')) return;
     discardDraft();
     location.reload();
   });
