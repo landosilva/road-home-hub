@@ -90,11 +90,22 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.04);
     transition: box-shadow 0.2s, border-color 0.2s;
     z-index: 1;
+    cursor: pointer;
   }
   .screen:hover {
     box-shadow: 0 12px 40px rgba(0,0,0,0.1);
     border-color: var(--accent);
     z-index: 2;
+  }
+  .screen.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 12px 40px rgba(0,0,0,0.1);
+    z-index: 2;
+  }
+  .screen.dragging-screen {
+    opacity: 0.9;
+    z-index: 10;
+    cursor: grabbing;
   }
   .screen-img {
     width: 100%;
@@ -142,6 +153,26 @@
     font-weight: 300;
     line-height: 1.5;
   }
+  /* Edit icon on screen card */
+  .screen-edit-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 28px; height: 28px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.9);
+    color: var(--muted);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: all 0.15s;
+  }
+  .screen:hover .screen-edit-btn { display: flex; }
+  .screen-edit-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   /* Shared nav header */
   .nav-header {
@@ -241,6 +272,14 @@
     letter-spacing: 0.02em;
   }
   .play-btn:hover { background: #c04e22 !important; }
+  .add-screen-btn {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    width: auto !important;
+    padding: 0 0.8rem !important;
+    color: var(--teal) !important;
+  }
+  .add-screen-btn:hover { background: var(--teal-soft) !important; }
 
   /* ========== PLAY MODE ========== */
   .play-overlay {
@@ -380,8 +419,8 @@
   }
   .play-nav .nav-teal:hover { background: rgba(26,143,110,0.4); color: #fff; }
 
-  /* Map popup */
-  .map-popup {
+  /* Generic popup (map, etc.) */
+  .screen-popup {
     display: none;
     position: absolute;
     inset: 0;
@@ -391,12 +430,11 @@
     align-items: center;
     justify-content: center;
   }
-  .map-popup.active { display: flex; }
-  .map-popup-inner {
+  .screen-popup.active { display: flex; }
+  .screen-popup-inner {
     position: relative;
     width: 80%;
     max-width: 700px;
-    aspect-ratio: 4/3;
     background: #1a1917;
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 12px;
@@ -408,9 +446,12 @@
     flex-direction: column;
     gap: 0.5rem;
   }
-  .map-popup-inner .map-placeholder-icon { font-size: 4rem; opacity: 0.3; }
-  .map-popup-inner .map-placeholder-text { font-size: 0.9rem; font-weight: 300; letter-spacing: 0.05em; }
-  .map-popup-close {
+  .screen-popup-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .screen-popup-close {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
@@ -424,7 +465,7 @@
     display: flex; align-items: center; justify-content: center;
     transition: all 0.15s;
   }
-  .map-popup-close:hover { background: rgba(0,0,0,0.6); color: #fff; }
+  .screen-popup-close:hover { background: rgba(0,0,0,0.6); color: #fff; }
 
   /* Close button (top right, inside screen) */
   .play-close {
@@ -485,6 +526,165 @@
   }
   .play-dot.active { background: var(--accent); transform: scale(1.4); }
   .play-dot:hover { background: rgba(255,255,255,0.5); }
+
+  /* ========== EDIT PANEL ========== */
+  .edit-panel {
+    position: fixed;
+    top: 48px;
+    right: -400px;
+    width: 380px;
+    bottom: 0;
+    background: var(--card);
+    border-left: 1px solid var(--border);
+    z-index: 150;
+    overflow-y: auto;
+    transition: right 0.25s ease;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.05);
+  }
+  .edit-panel.open { right: 0; }
+  .edit-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--card);
+    z-index: 1;
+  }
+  .edit-panel-header h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .edit-panel-close {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .edit-panel-close:hover { background: var(--surface); color: var(--text); }
+  .edit-section {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .edit-section-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faint);
+    margin-bottom: 0.6rem;
+  }
+  .edit-field { margin-bottom: 0.7rem; }
+  .edit-field:last-child { margin-bottom: 0; }
+  .edit-field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .edit-field input,
+  .edit-field textarea,
+  .edit-field select {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: var(--font);
+    font-size: 0.8rem;
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+  .edit-field input:focus,
+  .edit-field textarea:focus,
+  .edit-field select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .edit-field textarea { resize: vertical; min-height: 50px; }
+  .edit-conn-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.75rem;
+  }
+  .edit-conn-row select {
+    flex: 1;
+    padding: 0.35rem 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    font-family: var(--font);
+    font-size: 0.75rem;
+    color: var(--text);
+  }
+  .edit-conn-row input {
+    flex: 1;
+    padding: 0.35rem 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    font-family: var(--font);
+    font-size: 0.75rem;
+    color: var(--text);
+  }
+  .edit-conn-remove {
+    width: 24px; height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--faint);
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .edit-conn-remove:hover { background: rgba(212,88,42,0.1); color: var(--accent); }
+  .edit-add-btn {
+    border: 1px dashed var(--border);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+    font-family: var(--font);
+    font-size: 0.7rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.15s;
+    margin-top: 0.3rem;
+  }
+  .edit-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .edit-delete-btn {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid rgba(212,88,42,0.3);
+    background: rgba(212,88,42,0.05);
+    color: var(--accent);
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .edit-delete-btn:hover { background: rgba(212,88,42,0.12); }
+  .edit-popup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .edit-popup-card .edit-field { margin-bottom: 0.5rem; }
 </style>
 </head>
 <body>
@@ -506,100 +706,10 @@
 <!-- CANVAS -->
 <div class="canvas-wrap" id="canvasWrap">
   <div class="canvas" id="canvas">
-
     <!-- SVG connections layer -->
     <svg class="connections" width="2000" height="2200" id="connSvg"></svg>
-
-    <!-- ROW 1: Intro → Main Menu → Character Creation -->
-
-    <!-- 01 Intro -->
-    <div class="screen" id="s1" style="left:80px;top:80px">
-      <div class="screen-img">
-        <img src="images/van-sunset-road.jpg" alt="Title screen">
-      </div>
-      <div class="screen-body">
-        <div class="screen-num" style="color:var(--accent)">Screen 01</div>
-        <div class="screen-title">Intro</div>
-        <div class="screen-desc">Animated title sequence with the van driving into the sunset.</div>
-      </div>
-    </div>
-
-    <!-- 02 Main Menu -->
-    <div class="screen" id="s2" style="left:80px;top:420px">
-      <div class="screen-img">
-        <img src="images/van-driving-back.png" alt="Main menu">
-      </div>
-      <div class="screen-body">
-        <div class="screen-num" style="color:var(--accent)">Screen 02</div>
-        <div class="screen-title">Main menu</div>
-        <div class="screen-desc">New game, continue, settings, credits. The hub you return to.</div>
-      </div>
-    </div>
-
-    <!-- 03 Character Creation -->
-    <div class="screen" id="s3" style="left:80px;top:760px">
-      <div class="screen-img">
-        <img src="images/van-character-creation.png" alt="Character creation">
-      </div>
-      <div class="screen-body">
-        <div class="screen-num" style="color:var(--teal)">Screen 03</div>
-        <div class="screen-title">Character creation</div>
-        <div class="screen-desc">Customize both characters, choose van type and pet.</div>
-      </div>
-    </div>
-
-    <!-- ROW 2: Driving → Camp Setup → Night Watch -->
-
-    <!-- 04 Driving -->
-    <div class="screen" id="s4" style="left:80px;top:1100px">
-      <div class="screen-img">
-        <img src="images/van-driving-road.png" alt="Driving">
-      </div>
-      <div class="screen-body">
-        <div class="screen-num" style="color:var(--amber)">Screen 04</div>
-        <div class="screen-title">Driving</div>
-        <div class="screen-desc">The core experience. Map, stops, exploration all happen here.</div>
-      </div>
-    </div>
-
-    <!-- 05 Camp Setup -->
-    <div class="screen" id="s5" style="left:500px;top:1100px">
-      <div class="screen-img">
-        <img src="images/van-camp-setup.png" alt="Camp setup">
-      </div>
-      <div class="screen-body">
-        <div class="screen-num" style="color:var(--purple)">Screen 05</div>
-        <div class="screen-title">Camp setup</div>
-        <div class="screen-desc">Place defenses, cook dinner, prepare for the night.</div>
-      </div>
-    </div>
-
-    <!-- 06 Night Watch -->
-    <div class="screen" id="s6" style="left:500px;top:1440px">
-      <div class="screen-img">
-        <img src="images/van-night-watch.png" alt="Night watch">
-      </div>
-      <div class="screen-body">
-        <div class="screen-num" style="color:var(--purple)">Screen 06</div>
-        <div class="screen-title">Night watch</div>
-        <div class="screen-desc">Passive tower defense. Watch your defenses hold or fail.</div>
-      </div>
-    </div>
-
-    <!-- 07 End-game Gallery (far right, between rows) -->
-    <div class="screen" id="s7" style="left:80px;top:1600px">
-      <div class="screen-img">
-        <img src="images/van-arrival-home.png" alt="Arrival home">
-      </div>
-      <div class="screen-body">
-        <div class="screen-num" style="color:var(--blue)">Screen 07</div>
-        <div class="screen-title">End-game gallery</div>
-        <div class="screen-desc">Visual diary of the journey. Photos, stats, moments.</div>
-      </div>
-    </div>
-
+    <!-- Screen cards rendered dynamically -->
   </div>
-
 </div>
 
 <!-- TOOLBAR -->
@@ -611,6 +721,8 @@
   <button id="fitAll" title="Fit all">⊞</button>
   <button id="resetView" title="Reset">↺</button>
   <div class="sep"></div>
+  <button class="add-screen-btn" id="addScreenBtn">+ Add Screen</button>
+  <div class="sep"></div>
   <button class="play-btn" id="playBtn">▶ Play</button>
 </div>
 
@@ -618,127 +730,662 @@
 <div class="play-overlay" id="playOverlay">
   <button class="play-close" id="playClose">✕</button>
   <div class="play-dots" id="playDots"></div>
+  <!-- Play screens rendered dynamically -->
+</div>
 
-  <!-- 01 Intro -->
-  <div class="play-screen" data-idx="0">
-    <div class="play-bg"><img src="images/van-sunset-road.jpg" alt=""></div>
-    <div class="play-label">
-      <div class="play-label-num">Screen 01</div>
-      <div class="play-label-title">Intro</div>
-      <div class="play-label-desc">The van drives into the sunset. A journey begins.</div>
-    </div>
-    <div class="play-nav">
-      <button class="nav-next" id="playNext0">Start →</button>
-    </div>
+<!-- EDIT PANEL -->
+<div class="edit-panel" id="editPanel">
+  <div class="edit-panel-header">
+    <h3 id="editPanelTitle">Edit Screen</h3>
+    <button class="edit-panel-close" id="editPanelClose">✕</button>
   </div>
-
-  <!-- 02 Main Menu -->
-  <div class="play-screen" data-idx="1">
-    <div class="play-bg"><img src="images/van-driving-back.png" alt=""></div>
-    <div class="play-label">
-      <div class="play-label-num">Screen 02</div>
-      <div class="play-label-title">Main menu</div>
-      <div class="play-label-desc">New game, continue, settings, credits.</div>
-    </div>
-    <div class="play-nav">
-      <button id="playContinue1">▶ Continue →</button>
-      <button class="nav-next" id="playNext1">New Game →</button>
-    </div>
-  </div>
-
-  <!-- 03 Character Creation -->
-  <div class="play-screen" data-idx="2">
-    <div class="play-bg">
-      <img src="images/van-character-creation.png" alt="Character creation">
-    </div>
-        <button class="play-menu-btn" onclick="goTo(1)">☰ Main Menu</button>
-    <div class="play-label">
-      <div class="play-label-num">Screen 03</div>
-      <div class="play-label-title">Character creation</div>
-      <div class="play-label-desc">Customize characters, van, and pet.</div>
-    </div>
-    <div class="play-nav">
-      
-      <button class="nav-next" id="playNext2">Hit the road →</button>
-    </div>
-  </div>
-
-  <!-- 04 Driving -->
-  <div class="play-screen" data-idx="3">
-    <div class="play-bg">
-      <img src="images/van-driving-road.png" alt="Driving">
-    </div>
-        <button class="play-menu-btn" onclick="goTo(1)">☰ Main Menu</button>
-    <div class="play-label">
-      <div class="play-label-num">Screen 04</div>
-      <div class="play-label-title">Driving</div>
-      <div class="play-label-desc">The open road. Navigate, explore, manage resources.</div>
-    </div>
-    <div class="play-nav">
-      <button id="playMap3">🗺 Map</button>
-      <button id="playHome3" class="nav-teal">🏠 You're home →</button>
-      <button class="nav-next" id="playNext3">Find a spot to rest →</button>
-    </div>
-    <div class="map-popup" id="mapPopup">
-      <div class="map-popup-inner">
-        <button class="map-popup-close" id="mapClose">✕</button>
-        <img src="images/van-map.png" alt="Map" style="width:100%;height:100%;object-fit:cover;">
-      </div>
-    </div>
-  </div>
-  <div class="play-screen" data-idx="4">
-    <div class="play-bg">
-      <img src="images/van-camp-setup.png" alt="Camp setup">
-    </div>
-        <button class="play-menu-btn" onclick="goTo(1)">☰ Main Menu</button>
-    <div class="play-label">
-      <div class="play-label-num">Screen 05</div>
-      <div class="play-label-title">Camp setup</div>
-      <div class="play-label-desc">Set up defenses, cook dinner, get ready for the night.</div>
-    </div>
-    <div class="play-nav">
-      
-      <button class="nav-next" id="playNext4">Go to sleep →</button>
-    </div>
-  </div>
-
-  <!-- 06 Night Watch -->
-  <div class="play-screen" data-idx="5">
-    <div class="play-bg">
-      <img src="images/van-night-watch.png" alt="Night watch">
-    </div>
-        <button class="play-menu-btn" onclick="goTo(1)">☰ Main Menu</button>
-    <div class="play-label">
-      <div class="play-label-num">Screen 06</div>
-      <div class="play-label-title">Night watch</div>
-      <div class="play-label-desc">Passive defense. Watch your barricades hold — or fail.</div>
-    </div>
-    <div class="play-nav">
-      
-      <button class="nav-next" id="playNext5">Morning — drive on →</button>
-    </div>
-  </div>
-
-  <!-- 07 End-game Gallery -->
-  <div class="play-screen" data-idx="6">
-    <div class="play-bg">
-      <img src="images/van-arrival-home.png" alt="">
-    </div>
-        <button class="play-menu-btn" onclick="goTo(1)">☰ Main Menu</button>
-    <div class="play-label">
-      <div class="play-label-num">Screen 07</div>
-      <div class="play-label-title">End-game gallery</div>
-      <div class="play-label-desc">Your journey, laid out as a visual diary. You made it home.</div>
-    </div>
-    <div class="play-nav">
-      
-      <button class="nav-next" id="playNext6">Play again ↺</button>
-    </div>
-  </div>
-
+  <div id="editPanelContent"></div>
 </div>
 
 <script>
+// ========== DATA LAYER ==========
+const STORAGE_KEY = 'roadhome-screenflow';
+
+function defaultProject() {
+  return {
+    version: 1,
+    screens: [
+      {
+        id: 's1', num: 1, title: 'Intro',
+        subtitle: 'Animated title sequence with the van driving into the sunset.',
+        playDesc: 'The van drives into the sunset. A journey begins.',
+        image: 'images/van-sunset-road.jpg',
+        color: 'var(--accent)', x: 80, y: 80, showMenuBtn: false,
+        connections: [
+          { id: 'c1-1', label: 'Start →', target: 's2', style: 'next', popup: null }
+        ],
+        popups: []
+      },
+      {
+        id: 's2', num: 2, title: 'Main menu',
+        subtitle: 'New game, continue, settings, credits. The hub you return to.',
+        playDesc: 'New game, continue, settings, credits.',
+        image: 'images/van-driving-back.png',
+        color: 'var(--accent)', x: 80, y: 420, showMenuBtn: false,
+        connections: [
+          { id: 'c2-1', label: '▶ Continue →', target: 's4', style: 'default', popup: null },
+          { id: 'c2-2', label: 'New Game →', target: 's3', style: 'next', popup: null }
+        ],
+        popups: []
+      },
+      {
+        id: 's3', num: 3, title: 'Character creation',
+        subtitle: 'Customize both characters, choose van type and pet.',
+        playDesc: 'Customize characters, van, and pet.',
+        image: 'images/van-character-creation.png',
+        color: 'var(--teal)', x: 80, y: 760, showMenuBtn: true,
+        connections: [
+          { id: 'c3-1', label: 'Hit the road →', target: 's4', style: 'next', popup: null }
+        ],
+        popups: []
+      },
+      {
+        id: 's4', num: 4, title: 'Driving',
+        subtitle: 'The core experience. Map, stops, exploration all happen here.',
+        playDesc: 'The open road. Navigate, explore, manage resources.',
+        image: 'images/van-driving-road.png',
+        color: 'var(--amber)', x: 80, y: 1100, showMenuBtn: true,
+        connections: [
+          { id: 'c4-1', label: '🗺 Map', target: null, style: 'default', popup: 'popup-map' },
+          { id: 'c4-2', label: '🏠 You\'re home →', target: 's7', style: 'teal', popup: null },
+          { id: 'c4-3', label: 'Find a spot to rest →', target: 's5', style: 'next', popup: null }
+        ],
+        popups: [
+          { id: 'popup-map', title: 'Map', image: 'images/van-map.png', aspectRatio: '4/3' }
+        ]
+      },
+      {
+        id: 's5', num: 5, title: 'Camp setup',
+        subtitle: 'Place defenses, cook dinner, prepare for the night.',
+        playDesc: 'Set up defenses, cook dinner, get ready for the night.',
+        image: 'images/van-camp-setup.png',
+        color: 'var(--purple)', x: 500, y: 1100, showMenuBtn: true,
+        connections: [
+          { id: 'c5-1', label: 'Go to sleep →', target: 's6', style: 'next', popup: null }
+        ],
+        popups: []
+      },
+      {
+        id: 's6', num: 6, title: 'Night watch',
+        subtitle: 'Passive tower defense. Watch your defenses hold or fail.',
+        playDesc: 'Passive defense. Watch your barricades hold — or fail.',
+        image: 'images/van-night-watch.png',
+        color: 'var(--purple)', x: 500, y: 1440, showMenuBtn: true,
+        connections: [
+          { id: 'c6-1', label: 'Morning — drive on →', target: 's4', style: 'next', popup: null }
+        ],
+        popups: []
+      },
+      {
+        id: 's7', num: 7, title: 'End-game gallery',
+        subtitle: 'Visual diary of the journey. Photos, stats, moments.',
+        playDesc: 'Your journey, laid out as a visual diary. You made it home.',
+        image: 'images/van-arrival-home.png',
+        color: 'var(--blue)', x: 80, y: 1600, showMenuBtn: true,
+        connections: [
+          { id: 'c7-1', label: 'Play again ↺', target: 's1', style: 'next', popup: null }
+        ],
+        popups: []
+      }
+    ],
+    canvasConnections: [
+      { from: 's1', to: 's2' },
+      { from: 's2', to: 's3' },
+      { from: 's3', to: 's4' },
+      { from: 's4', to: 's5' },
+      { from: 's5', to: 's6' },
+      { from: 's6', to: 's4' },
+      { from: 's4', to: 's7' }
+    ]
+  };
+}
+
+function loadProject() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && data.version && data.screens) return data;
+    }
+  } catch(e) {}
+  return defaultProject();
+}
+
+function saveProject(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function resetProject() {
+  localStorage.removeItem(STORAGE_KEY);
+  return defaultProject();
+}
+
+let project = loadProject();
+
+// ========== RENDERING ==========
+const canvasEl = document.getElementById('canvas');
+const connSvg = document.getElementById('connSvg');
+const overlayEl = document.getElementById('playOverlay');
+const dotsEl = document.getElementById('playDots');
+
+let selectedScreenId = null;
+
+function renderCanvas() {
+  // Remove existing screen cards (keep SVG)
+  canvasEl.querySelectorAll('.screen').forEach(el => el.remove());
+
+  project.screens.forEach(screen => {
+    const div = document.createElement('div');
+    div.className = 'screen';
+    div.id = screen.id;
+    div.style.left = screen.x + 'px';
+    div.style.top = screen.y + 'px';
+    if (screen.id === selectedScreenId) div.classList.add('selected');
+
+    const imgHTML = screen.image
+      ? `<img src="${screen.image}" alt="${screen.title}">`
+      : `<div class="placeholder"><div class="placeholder-icon">🖼</div><div class="placeholder-text">No image</div></div>`;
+
+    div.innerHTML = `
+      <div class="screen-img">${imgHTML}</div>
+      <div class="screen-body">
+        <div class="screen-num" style="color:${screen.color}">Screen ${String(screen.num).padStart(2,'0')}</div>
+        <div class="screen-title">${screen.title}</div>
+        <div class="screen-desc">${screen.subtitle}</div>
+      </div>
+      <button class="screen-edit-btn" data-id="${screen.id}">✎</button>
+    `;
+
+    // Edit button
+    div.querySelector('.screen-edit-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectScreen(screen.id);
+      openEditPanel(screen.id);
+    });
+
+    // Click to play
+    div.addEventListener('click', (e) => {
+      if (div.classList.contains('dragging-screen')) return;
+      const idx = project.screens.findIndex(s => s.id === screen.id);
+      overlayEl.classList.add('active');
+      goTo(idx);
+    });
+
+    // Drag to reposition
+    setupScreenDrag(div, screen);
+
+    canvasEl.appendChild(div);
+  });
+
+  drawConns();
+}
+
+function setupScreenDrag(div, screen) {
+  let dragStartX, dragStartY, origX, origY, hasMoved;
+
+  div.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.screen-edit-btn')) return;
+    e.stopPropagation();
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    origX = screen.x;
+    origY = screen.y;
+    hasMoved = false;
+
+    const onMove = (e2) => {
+      const dx = (e2.clientX - dragStartX) / scale;
+      const dy = (e2.clientY - dragStartY) / scale;
+      if (!hasMoved && Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+      hasMoved = true;
+      div.classList.add('dragging-screen');
+      screen.x = Math.round(origX + dx);
+      screen.y = Math.round(origY + dy);
+      div.style.left = screen.x + 'px';
+      div.style.top = screen.y + 'px';
+      drawConns();
+    };
+
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      if (hasMoved) {
+        saveProject(project);
+        // Small delay to prevent click from firing
+        setTimeout(() => div.classList.remove('dragging-screen'), 50);
+      }
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  });
+}
+
+function renderPlayMode() {
+  // Remove existing play screens
+  overlayEl.querySelectorAll('.play-screen').forEach(el => el.remove());
+  dotsEl.innerHTML = '';
+
+  project.screens.forEach((screen, idx) => {
+    const div = document.createElement('div');
+    div.className = 'play-screen';
+    div.dataset.idx = idx;
+
+    // Background
+    const bgHTML = screen.image
+      ? `<img src="${screen.image}" alt="">`
+      : `<div class="play-placeholder"><div class="play-placeholder-icon">🖼</div><div class="play-placeholder-text">${screen.title}</div></div>`;
+
+    let html = `<div class="play-bg">${bgHTML}</div>`;
+
+    // Menu button
+    if (screen.showMenuBtn) {
+      const menuIdx = project.screens.findIndex(s => s.id === 's2');
+      html += `<button class="play-menu-btn" data-goto="${menuIdx >= 0 ? menuIdx : 1}">☰ Main Menu</button>`;
+    }
+
+    // Label
+    html += `
+      <div class="play-label">
+        <div class="play-label-num">Screen ${String(screen.num).padStart(2,'0')}</div>
+        <div class="play-label-title">${screen.title}</div>
+        <div class="play-label-desc">${screen.playDesc || screen.subtitle}</div>
+      </div>
+    `;
+
+    // Navigation buttons
+    html += '<div class="play-nav">';
+    screen.connections.forEach(conn => {
+      const styleClass = conn.style === 'next' ? 'nav-next' : conn.style === 'teal' ? 'nav-teal' : '';
+      if (conn.popup) {
+        html += `<button class="${styleClass}" data-popup="${conn.popup}">${conn.label}</button>`;
+      } else if (conn.target) {
+        const targetIdx = project.screens.findIndex(s => s.id === conn.target);
+        html += `<button class="${styleClass}" data-goto="${targetIdx}">${conn.label}</button>`;
+      }
+    });
+    html += '</div>';
+
+    // Popups
+    screen.popups.forEach(popup => {
+      html += `
+        <div class="screen-popup" data-popup-id="${popup.id}">
+          <div class="screen-popup-inner" style="aspect-ratio:${popup.aspectRatio || '4/3'}">
+            <button class="screen-popup-close">✕</button>
+            ${popup.image ? `<img src="${popup.image}" alt="${popup.title}">` : `<div style="padding:2rem;color:#666">${popup.title}</div>`}
+          </div>
+        </div>
+      `;
+    });
+
+    div.innerHTML = html;
+    overlayEl.appendChild(div);
+
+    // Wire button events
+    div.querySelectorAll('[data-goto]').forEach(btn => {
+      btn.addEventListener('click', () => goTo(parseInt(btn.dataset.goto)));
+    });
+    div.querySelectorAll('[data-popup]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const popupEl = div.querySelector(`[data-popup-id="${btn.dataset.popup}"]`);
+        if (popupEl) popupEl.classList.add('active');
+      });
+    });
+    div.querySelectorAll('.screen-popup-close').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.screen-popup').classList.remove('active');
+      });
+    });
+
+    // Dot
+    const dot = document.createElement('div');
+    dot.className = 'play-dot';
+    dot.addEventListener('click', () => goTo(idx));
+    dotsEl.appendChild(dot);
+  });
+}
+
+// ========== CONNECTION ARROWS ==========
+function getEdgePoint(el, targetEl) {
+  const sx = parseInt(el.style.left), sy = parseInt(el.style.top);
+  const sw = el.offsetWidth, sh = el.offsetHeight;
+  const cx = sx + sw/2, cy = sy + sh/2;
+  const tx = parseInt(targetEl.style.left) + targetEl.offsetWidth/2;
+  const ty = parseInt(targetEl.style.top) + targetEl.offsetHeight/2;
+  const dx = tx - cx, dy = ty - cy;
+  if (Math.abs(dx) / sw > Math.abs(dy) / sh) {
+    return dx > 0 ? {x: sx + sw, y: cy} : {x: sx, y: cy};
+  } else {
+    return dy > 0 ? {x: cx, y: sy + sh} : {x: cx, y: sy};
+  }
+}
+
+function drawConns() {
+  requestAnimationFrame(() => {
+    let defs = '<defs><marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="conn-arrow" points="0 0, 10 3.5, 0 7"/></marker></defs>';
+    let lines = '<g class="conn-lines">';
+    let tips = '<g class="conn-tips">';
+    project.canvasConnections.forEach(({from: fid, to: tid}) => {
+      const fromEl = document.getElementById(fid);
+      const toEl = document.getElementById(tid);
+      if (!fromEl || !toEl) return;
+
+      const a = getEdgePoint(fromEl, toEl);
+      const b = getEdgePoint(toEl, fromEl);
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const aExitsHoriz = (a.y !== parseInt(fromEl.style.top) && a.y !== parseInt(fromEl.style.top) + fromEl.offsetHeight);
+      const bExitsHoriz = (b.y !== parseInt(toEl.style.top) && b.y !== parseInt(toEl.style.top) + toEl.offsetHeight);
+      let cx1, cy1, cx2, cy2;
+      const dist = Math.max(Math.abs(dx), Math.abs(dy)) * 0.5;
+      if (aExitsHoriz) {
+        cx1 = a.x + Math.sign(dx || 1) * dist; cy1 = a.y;
+      } else {
+        cx1 = a.x; cy1 = a.y + Math.sign(dy || 1) * dist;
+      }
+      if (bExitsHoriz) {
+        cx2 = b.x - Math.sign(dx || 1) * dist; cy2 = b.y;
+      } else {
+        cx2 = b.x; cy2 = b.y - Math.sign(dy || 1) * dist;
+      }
+      const d = 'M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;
+      lines += '<path class="conn-line" d="'+d+'"/>';
+      tips += '<path class="conn-line" d="'+d+'" marker-end="url(#ah)" style="stroke:none"/>';
+    });
+    lines += '</g>';
+    tips += '</g>';
+    connSvg.innerHTML = defs + lines + tips;
+  });
+}
+
+// ========== EDIT PANEL ==========
+const editPanel = document.getElementById('editPanel');
+const editPanelContent = document.getElementById('editPanelContent');
+
+function selectScreen(id) {
+  selectedScreenId = id;
+  canvasEl.querySelectorAll('.screen').forEach(s => s.classList.toggle('selected', s.id === id));
+}
+
+function openEditPanel(screenId) {
+  const screen = project.screens.find(s => s.id === screenId);
+  if (!screen) return;
+
+  document.getElementById('editPanelTitle').textContent = `Edit: ${screen.title}`;
+
+  const colorOptions = [
+    { val: 'var(--accent)', label: 'Red' },
+    { val: 'var(--teal)', label: 'Teal' },
+    { val: 'var(--purple)', label: 'Purple' },
+    { val: 'var(--amber)', label: 'Amber' },
+    { val: 'var(--blue)', label: 'Blue' }
+  ];
+
+  const styleOptions = [
+    { val: 'next', label: 'Primary (accent)' },
+    { val: 'default', label: 'Default' },
+    { val: 'teal', label: 'Teal' }
+  ];
+
+  const screenOptions = project.screens.map(s => `<option value="${s.id}" ${s.id === screenId ? 'disabled' : ''}>${s.title}</option>`).join('');
+
+  let html = '';
+
+  // Basic info
+  html += `<div class="edit-section">
+    <div class="edit-section-label">Content</div>
+    <div class="edit-field">
+      <label>Title</label>
+      <input type="text" id="editTitle" value="${screen.title}">
+    </div>
+    <div class="edit-field">
+      <label>Subtitle (canvas)</label>
+      <textarea id="editSubtitle">${screen.subtitle}</textarea>
+    </div>
+    <div class="edit-field">
+      <label>Play description</label>
+      <textarea id="editPlayDesc">${screen.playDesc || ''}</textarea>
+    </div>
+    <div class="edit-field">
+      <label>Image path</label>
+      <input type="text" id="editImage" value="${screen.image || ''}" placeholder="images/filename.png">
+    </div>
+    <div class="edit-field">
+      <label>Screen number</label>
+      <input type="number" id="editNum" value="${screen.num}" min="1" style="width:80px">
+    </div>
+    <div class="edit-field">
+      <label>Color</label>
+      <select id="editColor">${colorOptions.map(c => `<option value="${c.val}" ${screen.color === c.val ? 'selected' : ''}>${c.label}</option>`).join('')}</select>
+    </div>
+    <div class="edit-field">
+      <label><input type="checkbox" id="editMenuBtn" ${screen.showMenuBtn ? 'checked' : ''}> Show Main Menu button</label>
+    </div>
+  </div>`;
+
+  // Canvas connections
+  html += `<div class="edit-section">
+    <div class="edit-section-label">Canvas Arrows</div>
+    <div id="editCanvasConns">`;
+  const outgoing = project.canvasConnections.filter(c => c.from === screenId);
+  outgoing.forEach((conn, i) => {
+    html += `<div class="edit-conn-row">
+      <span style="color:var(--faint);font-size:0.7rem">→</span>
+      <select data-canvas-conn="${i}">${screenOptions.replace(`value="${conn.to}"`, `value="${conn.to}" selected`)}</select>
+      <button class="edit-conn-remove" data-remove-canvas="${i}">✕</button>
+    </div>`;
+  });
+  html += `</div>
+    <button class="edit-add-btn" id="addCanvasConn">+ Add arrow</button>
+  </div>`;
+
+  // Play connections
+  html += `<div class="edit-section">
+    <div class="edit-section-label">Play Mode Buttons</div>
+    <div id="editPlayConns">`;
+  screen.connections.forEach((conn, i) => {
+    const popupOptions = screen.popups.map(p => `<option value="${p.id}" ${conn.popup === p.id ? 'selected' : ''}>${p.title}</option>`).join('');
+    html += `<div class="edit-conn-row" style="flex-wrap:wrap;gap:0.3rem">
+      <input type="text" value="${conn.label}" data-conn-label="${i}" style="flex:1;min-width:100px" placeholder="Label">
+      <select data-conn-style="${i}" style="width:100px">${styleOptions.map(s => `<option value="${s.val}" ${conn.style === s.val ? 'selected' : ''}>${s.label}</option>`).join('')}</select>
+      <select data-conn-target="${i}" style="flex:1;min-width:100px">
+        <option value="">— None —</option>
+        ${screenOptions.replace(conn.target ? `value="${conn.target}"` : 'NOMATCH', conn.target ? `value="${conn.target}" selected` : 'NOMATCH')}
+      </select>
+      <select data-conn-popup="${i}" style="width:100px">
+        <option value="">No popup</option>
+        ${popupOptions}
+      </select>
+      <button class="edit-conn-remove" data-remove-conn="${i}">✕</button>
+    </div>`;
+  });
+  html += `</div>
+    <button class="edit-add-btn" id="addPlayConn">+ Add button</button>
+  </div>`;
+
+  // Popups
+  html += `<div class="edit-section">
+    <div class="edit-section-label">Popups</div>
+    <div id="editPopups">`;
+  screen.popups.forEach((popup, i) => {
+    html += `<div class="edit-popup-card">
+      <div class="edit-field">
+        <label>Title</label>
+        <input type="text" value="${popup.title}" data-popup-title="${i}">
+      </div>
+      <div class="edit-field">
+        <label>Image</label>
+        <input type="text" value="${popup.image || ''}" data-popup-image="${i}" placeholder="images/filename.png">
+      </div>
+      <div class="edit-field">
+        <label>Aspect ratio</label>
+        <input type="text" value="${popup.aspectRatio || '4/3'}" data-popup-ratio="${i}" placeholder="4/3" style="width:80px">
+      </div>
+      <button class="edit-conn-remove" data-remove-popup="${i}" style="width:100%;text-align:center;height:auto;padding:0.25rem">Remove popup</button>
+    </div>`;
+  });
+  html += `</div>
+    <button class="edit-add-btn" id="addPopup">+ Add popup</button>
+  </div>`;
+
+  // Delete
+  html += `<div class="edit-section">
+    <button class="edit-delete-btn" id="deleteScreen">Delete this screen</button>
+  </div>`;
+
+  editPanelContent.innerHTML = html;
+  editPanel.classList.add('open');
+
+  // Wire up change handlers
+  const save = () => { saveProject(project); renderCanvas(); renderPlayMode(); };
+
+  document.getElementById('editTitle').addEventListener('input', (e) => { screen.title = e.target.value; document.getElementById('editPanelTitle').textContent = `Edit: ${screen.title}`; });
+  document.getElementById('editSubtitle').addEventListener('input', (e) => { screen.subtitle = e.target.value; });
+  document.getElementById('editPlayDesc').addEventListener('input', (e) => { screen.playDesc = e.target.value; });
+  document.getElementById('editImage').addEventListener('input', (e) => { screen.image = e.target.value; });
+  document.getElementById('editNum').addEventListener('input', (e) => { screen.num = parseInt(e.target.value) || 1; });
+  document.getElementById('editColor').addEventListener('change', (e) => { screen.color = e.target.value; });
+  document.getElementById('editMenuBtn').addEventListener('change', (e) => { screen.showMenuBtn = e.target.checked; });
+
+  // Debounced save on any input
+  let saveTimer;
+  editPanelContent.addEventListener('input', () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); });
+  editPanelContent.addEventListener('change', () => { clearTimeout(saveTimer); save(); });
+
+  // Canvas connection changes
+  editPanelContent.querySelectorAll('[data-canvas-conn]').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const i = parseInt(sel.dataset.canvasConn);
+      const outgoing = project.canvasConnections.filter(c => c.from === screenId);
+      if (outgoing[i]) outgoing[i].to = sel.value;
+      save();
+    });
+  });
+  editPanelContent.querySelectorAll('[data-remove-canvas]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const outgoing = project.canvasConnections.filter(c => c.from === screenId);
+      const i = parseInt(btn.dataset.removeCanvas);
+      const conn = outgoing[i];
+      project.canvasConnections = project.canvasConnections.filter(c => c !== conn);
+      save(); openEditPanel(screenId);
+    });
+  });
+  document.getElementById('addCanvasConn').addEventListener('click', () => {
+    const firstOther = project.screens.find(s => s.id !== screenId);
+    if (firstOther) {
+      project.canvasConnections.push({ from: screenId, to: firstOther.id });
+      save(); openEditPanel(screenId);
+    }
+  });
+
+  // Play connection changes
+  editPanelContent.querySelectorAll('[data-conn-label]').forEach(inp => {
+    inp.addEventListener('input', () => { screen.connections[parseInt(inp.dataset.connLabel)].label = inp.value; });
+  });
+  editPanelContent.querySelectorAll('[data-conn-style]').forEach(sel => {
+    sel.addEventListener('change', () => { screen.connections[parseInt(sel.dataset.connStyle)].style = sel.value; });
+  });
+  editPanelContent.querySelectorAll('[data-conn-target]').forEach(sel => {
+    sel.addEventListener('change', () => { screen.connections[parseInt(sel.dataset.connTarget)].target = sel.value || null; });
+  });
+  editPanelContent.querySelectorAll('[data-conn-popup]').forEach(sel => {
+    sel.addEventListener('change', () => { screen.connections[parseInt(sel.dataset.connPopup)].popup = sel.value || null; });
+  });
+  editPanelContent.querySelectorAll('[data-remove-conn]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      screen.connections.splice(parseInt(btn.dataset.removeConn), 1);
+      save(); openEditPanel(screenId);
+    });
+  });
+  document.getElementById('addPlayConn').addEventListener('click', () => {
+    const newId = 'c' + screen.id.replace('s','') + '-' + (screen.connections.length + 1);
+    screen.connections.push({ id: newId, label: 'Button →', target: null, style: 'default', popup: null });
+    save(); openEditPanel(screenId);
+  });
+
+  // Popup changes
+  editPanelContent.querySelectorAll('[data-popup-title]').forEach(inp => {
+    inp.addEventListener('input', () => { screen.popups[parseInt(inp.dataset.popupTitle)].title = inp.value; });
+  });
+  editPanelContent.querySelectorAll('[data-popup-image]').forEach(inp => {
+    inp.addEventListener('input', () => { screen.popups[parseInt(inp.dataset.popupImage)].image = inp.value; });
+  });
+  editPanelContent.querySelectorAll('[data-popup-ratio]').forEach(inp => {
+    inp.addEventListener('input', () => { screen.popups[parseInt(inp.dataset.popupRatio)].aspectRatio = inp.value; });
+  });
+  editPanelContent.querySelectorAll('[data-remove-popup]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.removePopup);
+      const popupId = screen.popups[i].id;
+      screen.popups.splice(i, 1);
+      // Remove references from connections
+      screen.connections.forEach(c => { if (c.popup === popupId) c.popup = null; });
+      save(); openEditPanel(screenId);
+    });
+  });
+  document.getElementById('addPopup').addEventListener('click', () => {
+    const newId = 'popup-' + Date.now();
+    screen.popups.push({ id: newId, title: 'New popup', image: '', aspectRatio: '4/3' });
+    save(); openEditPanel(screenId);
+  });
+
+  // Delete screen
+  document.getElementById('deleteScreen').addEventListener('click', () => {
+    if (!confirm(`Delete "${screen.title}"? This will also remove all connections to/from it.`)) return;
+    project.screens = project.screens.filter(s => s.id !== screenId);
+    project.canvasConnections = project.canvasConnections.filter(c => c.from !== screenId && c.to !== screenId);
+    // Remove play connections targeting this screen
+    project.screens.forEach(s => {
+      s.connections = s.connections.filter(c => c.target !== screenId);
+    });
+    closeEditPanel();
+    save();
+  });
+}
+
+function closeEditPanel() {
+  editPanel.classList.remove('open');
+  selectedScreenId = null;
+  canvasEl.querySelectorAll('.screen').forEach(s => s.classList.remove('selected'));
+}
+
+document.getElementById('editPanelClose').addEventListener('click', closeEditPanel);
+
+// ========== ADD SCREEN ==========
+document.getElementById('addScreenBtn').addEventListener('click', () => {
+  const maxNum = Math.max(0, ...project.screens.map(s => s.num));
+  const newId = 's' + (maxNum + 1);
+  // Place at center of current viewport
+  const wrap = document.getElementById('canvasWrap');
+  const cx = (wrap.clientWidth / 2 - panX) / scale;
+  const cy = (wrap.clientHeight / 2 - panY) / scale;
+
+  const newScreen = {
+    id: newId,
+    num: maxNum + 1,
+    title: 'New screen',
+    subtitle: 'Description goes here.',
+    playDesc: '',
+    image: '',
+    color: 'var(--accent)',
+    x: Math.round(cx - 170),
+    y: Math.round(cy - 150),
+    showMenuBtn: false,
+    connections: [],
+    popups: []
+  };
+
+  project.screens.push(newScreen);
+  saveProject(project);
+  renderCanvas();
+  renderPlayMode();
+  selectScreen(newId);
+  openEditPanel(newId);
+});
+
 // ========== CANVAS PAN/ZOOM ==========
 const wrap = document.getElementById('canvasWrap');
 const canvas = document.getElementById('canvas');
@@ -773,14 +1420,13 @@ window.addEventListener('mouseup', () => {
   wrap.classList.remove('dragging');
 });
 
-// Reduced sensitivity: smaller zoom factor
 wrap.addEventListener('wheel', (e) => {
   e.preventDefault();
   const rect = wrap.getBoundingClientRect();
   const mx = e.clientX - rect.left;
   const my = e.clientY - rect.top;
   const prev = scale;
-  const factor = e.deltaY > 0 ? 0.95 : 1.05; // Much gentler
+  const factor = e.deltaY > 0 ? 0.95 : 1.05;
   scale = Math.min(Math.max(scale * factor, 0.2), 2.5);
   panX = mx - (mx - panX) * (scale / prev);
   panY = my - (my - panY) * (scale / prev);
@@ -857,162 +1503,74 @@ function fitAll() {
 document.getElementById('resetView').addEventListener('click', fitAll);
 document.getElementById('fitAll').addEventListener('click', fitAll);
 
-// Start focused on first screen (s1)
 function focusScreen(id) {
   const s = document.getElementById(id);
+  if (!s) return;
   const sl = parseInt(s.style.left), st = parseInt(s.style.top);
-  const sw = 340, sh = 300; // approximate screen card size
+  const sw = 340, sh = 300;
   scale = 1.2;
   panX = (wrap.clientWidth / 2) - (sl + sw / 2) * scale;
   panY = (wrap.clientHeight / 2) - (st + sh / 2) * scale;
   applyTransform();
 }
-focusScreen('s1');
-
-// ========== CONNECTION ARROWS ==========
-const connSvg = document.getElementById('connSvg');
-const conns = [
-  ['s1','s2'],  // Intro → Main Menu (down)
-  ['s2','s3'],  // Main Menu → Character Creation (down)
-  ['s3','s4'],  // Character Creation → Driving (down)
-  ['s4','s5'],  // Driving → Camp Setup (right)
-  ['s5','s6'],  // Camp Setup → Night Watch (down)
-  ['s6','s4'],  // Night Watch → Driving (loop back left+up)
-  ['s4','s7'],  // Driving → End-game Gallery (down)
-];
-
-function getEdgePoint(el, targetEl) {
-  const sx = parseInt(el.style.left), sy = parseInt(el.style.top);
-  const sw = el.offsetWidth, sh = el.offsetHeight;
-  const cx = sx + sw/2, cy = sy + sh/2;
-  const tx = parseInt(targetEl.style.left) + targetEl.offsetWidth/2;
-  const ty = parseInt(targetEl.style.top) + targetEl.offsetHeight/2;
-  const dx = tx - cx, dy = ty - cy;
-  if (Math.abs(dx) / sw > Math.abs(dy) / sh) {
-    return dx > 0 ? {x: sx + sw, y: cy} : {x: sx, y: cy};
-  } else {
-    return dy > 0 ? {x: cx, y: sy + sh} : {x: cx, y: sy};
-  }
-}
-
-function drawConns() {
-  requestAnimationFrame(() => {
-    let defs = '<defs><marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="conn-arrow" points="0 0, 10 3.5, 0 7"/></marker></defs>';
-    let lines = '<g class="conn-lines">';
-    let tips = '<g class="conn-tips">';
-    conns.forEach(([fid, tid]) => {
-      const from = document.getElementById(fid);
-      const to = document.getElementById(tid);
-      if (!from || !to) return;
-
-      const a = getEdgePoint(from, to);
-      const b = getEdgePoint(to, from);
-      const dx = b.x - a.x, dy = b.y - a.y;
-      // Determine if connection exits horizontally or vertically
-      const aExitsHoriz = (a.y !== parseInt(from.style.top) && a.y !== parseInt(from.style.top) + from.offsetHeight);
-      const bExitsHoriz = (b.y !== parseInt(to.style.top) && b.y !== parseInt(to.style.top) + to.offsetHeight);
-      let cx1, cy1, cx2, cy2;
-      const dist = Math.max(Math.abs(dx), Math.abs(dy)) * 0.5;
-      if (aExitsHoriz) {
-        cx1 = a.x + Math.sign(dx || 1) * dist; cy1 = a.y;
-      } else {
-        cx1 = a.x; cy1 = a.y + Math.sign(dy || 1) * dist;
-      }
-      if (bExitsHoriz) {
-        cx2 = b.x - Math.sign(dx || 1) * dist; cy2 = b.y;
-      } else {
-        cx2 = b.x; cy2 = b.y - Math.sign(dy || 1) * dist;
-      }
-      const d = 'M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;
-      lines += '<path class="conn-line" d="'+d+'"/>';
-      tips += '<path class="conn-line" d="'+d+'" marker-end="url(#ah)" style="stroke:none"/>';
-    });
-    lines += '</g>';
-    tips += '</g>';
-    connSvg.innerHTML = defs + lines + tips;
-  });
-}
-window.addEventListener('load', () => { drawConns(); });
-window.addEventListener('resize', () => { drawConns(); });
 
 // ========== PLAY MODE ==========
-const overlay = document.getElementById('playOverlay');
-const playScreens = document.querySelectorAll('.play-screen');
-const dotsContainer = document.getElementById('playDots');
-const totalScreens = playScreens.length;
 let playIdx = 0;
 
-// Build dots
-for (let i = 0; i < totalScreens; i++) {
-  const dot = document.createElement('div');
-  dot.className = 'play-dot';
-  dot.addEventListener('click', () => goTo(i));
-  dotsContainer.appendChild(dot);
-}
-
 function goTo(idx) {
+  const playScreens = overlayEl.querySelectorAll('.play-screen');
+  const totalScreens = playScreens.length;
   playIdx = Math.max(0, Math.min(idx, totalScreens - 1));
   playScreens.forEach(s => s.classList.remove('active'));
   playScreens[playIdx].classList.add('active');
-  dotsContainer.querySelectorAll('.play-dot').forEach((d, i) => {
+  dotsEl.querySelectorAll('.play-dot').forEach((d, i) => {
     d.classList.toggle('active', i === playIdx);
   });
 }
 
-// Wire up all per-screen next buttons
-for (let i = 0; i < totalScreens; i++) {
-  const nextBtn = document.getElementById('playNext' + i);
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      if (i === totalScreens - 1) {
-        // Gallery → back to intro
-        goTo(0);
-      } else if (i === 5) {
-        // Night watch → driving (loop)
-        goTo(3);
-      } else {
-        goTo(i + 1);
-      }
-    });
-  }
-}
-
-// "You're home" on driving → gallery
-document.getElementById('playHome3').addEventListener('click', () => goTo(6));
-
-// Main menu: Continue → driving (skip character creation)
-document.getElementById('playContinue1').addEventListener('click', () => goTo(3));
-
-// Map popup on driving screen
-const mapPopup = document.getElementById('mapPopup');
-document.getElementById('playMap3').addEventListener('click', () => mapPopup.classList.add('active'));
-document.getElementById('mapClose').addEventListener('click', () => mapPopup.classList.remove('active'));
-
 document.getElementById('playBtn').addEventListener('click', () => {
-  overlay.classList.add('active');
+  overlayEl.classList.add('active');
   goTo(0);
 });
 document.getElementById('playClose').addEventListener('click', () => {
-  overlay.classList.remove('active');
-});
-
-// Click screen card on canvas → open play mode at that screen
-document.querySelectorAll('.screen').forEach(s => {
-  s.style.cursor = 'pointer';
-  s.addEventListener('click', () => {
-    const idx = parseInt(s.id.replace('s', '')) - 1;
-    overlay.classList.add('active');
-    goTo(idx);
-  });
+  overlayEl.classList.remove('active');
 });
 
 // Keyboard
 document.addEventListener('keydown', (e) => {
-  if (!overlay.classList.contains('active')) return;
-  if (e.key === 'Escape') overlay.classList.remove('active');
+  if (!overlayEl.classList.contains('active')) {
+    if (e.key === 'Escape') closeEditPanel();
+    if (e.key === 'Delete' && selectedScreenId) {
+      document.getElementById('deleteScreen')?.click();
+    }
+    return;
+  }
+  if (e.key === 'Escape') overlayEl.classList.remove('active');
   if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(playIdx + 1); }
-  
 });
+
+// ========== INIT ==========
+renderCanvas();
+renderPlayMode();
+focusScreen(project.screens[0]?.id || 's1');
+window.addEventListener('resize', drawConns);
+
+// Export/Import
+window.exportProject = () => {
+  const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'road-home-screenflow.json';
+  a.click();
+};
+window.resetToDefaults = () => {
+  if (!confirm('Reset all screens to defaults? This cannot be undone.')) return;
+  project = resetProject();
+  renderCanvas();
+  renderPlayMode();
+  closeEditPanel();
+  focusScreen('s1');
+};
 </script>
 </body>
 </html>
