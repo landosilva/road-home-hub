@@ -499,6 +499,31 @@
     color: rgba(255,255,255,0.85);
   }
   .play-nav .nav-teal:hover { background: rgba(26,143,110,0.4); color: #fff; }
+  .play-nav .nav-purple {
+    background: rgba(124,107,196,0.25);
+    border-color: var(--purple);
+    color: rgba(255,255,255,0.85);
+  }
+  .play-nav .nav-purple:hover { background: rgba(124,107,196,0.4); color: #fff; }
+  .play-nav .nav-blue {
+    background: rgba(59,125,216,0.25);
+    border-color: var(--blue);
+    color: rgba(255,255,255,0.85);
+  }
+  .play-nav .nav-blue:hover { background: rgba(59,125,216,0.4); color: #fff; }
+  .play-nav .nav-amber {
+    background: rgba(184,120,15,0.25);
+    border-color: var(--amber);
+    color: rgba(255,255,255,0.85);
+  }
+  .play-nav .nav-amber:hover { background: rgba(184,120,15,0.4); color: #fff; }
+  .play-nav .nav-ghost {
+    background: transparent;
+    border-color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+  }
+  .play-nav .nav-ghost:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
 
   /* Generic popup (map, etc.) */
   .screen-popup {
@@ -730,6 +755,18 @@
     display: flex; align-items: center; justify-content: center;
   }
   .edit-conn-remove:hover { background: rgba(212,88,42,0.1); color: var(--accent); }
+  .edit-drag-handle {
+    cursor: grab;
+    color: var(--faint);
+    font-size: 0.7rem;
+    padding: 0 0.15rem;
+    user-select: none;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+  }
+  .edit-drag-handle:hover { opacity: 1; }
+  .edit-conn-row.drag-over { border-top: 2px solid var(--accent); }
+  .edit-conn-row.dragging-row { opacity: 0.4; }
   .edit-add-btn {
     border: 1px dashed var(--border);
     background: transparent;
@@ -1022,7 +1059,8 @@ function renderPlayMode() {
     // Navigation buttons
     html += '<div class="play-nav">';
     screen.connections.forEach(conn => {
-      const styleClass = conn.style === 'next' ? 'nav-next' : conn.style === 'teal' ? 'nav-teal' : '';
+      const styleMap = { next: 'nav-next', teal: 'nav-teal', purple: 'nav-purple', blue: 'nav-blue', amber: 'nav-amber', ghost: 'nav-ghost' };
+      const styleClass = styleMap[conn.style] || '';
       if (conn.popup) {
         html += `<button class="${styleClass}" data-popup="${conn.popup}">${conn.label}</button>`;
       } else if (conn.target) {
@@ -1149,7 +1187,11 @@ function openEditPanel(screenId) {
   const styleOptions = [
     { val: 'next', label: 'Primary (accent)' },
     { val: 'default', label: 'Default' },
-    { val: 'teal', label: 'Teal' }
+    { val: 'teal', label: 'Teal' },
+    { val: 'purple', label: 'Purple' },
+    { val: 'blue', label: 'Blue' },
+    { val: 'amber', label: 'Amber' },
+    { val: 'ghost', label: 'Ghost' }
   ];
 
   const screenOptions = project.screens.map(s => `<option value="${s.id}" ${s.id === screenId ? 'disabled' : ''}>${s.title}</option>`).join('');
@@ -1210,7 +1252,8 @@ function openEditPanel(screenId) {
     <div id="editPlayConns">`;
   screen.connections.forEach((conn, i) => {
     const popupOptions = screen.popups.map(p => `<option value="${p.id}" ${conn.popup === p.id ? 'selected' : ''}>${p.title}</option>`).join('');
-    html += `<div class="edit-conn-row" style="flex-wrap:wrap;gap:0.3rem">
+    html += `<div class="edit-conn-row" style="flex-wrap:wrap;gap:0.3rem" draggable="true" data-conn-idx="${i}">
+      <span class="edit-drag-handle" title="Drag to reorder">⠿</span>
       <input type="text" value="${conn.label}" data-conn-label="${i}" style="flex:1;min-width:100px" placeholder="Label">
       <select data-conn-style="${i}" style="width:100px">${styleOptions.map(s => `<option value="${s.val}" ${conn.style === s.val ? 'selected' : ''}>${s.label}</option>`).join('')}</select>
       <select data-conn-target="${i}" style="flex:1;min-width:100px">
@@ -1326,6 +1369,36 @@ function openEditPanel(screenId) {
     const newId = 'c' + screen.id.replace('s','') + '-' + (screen.connections.length + 1);
     screen.connections.push({ id: newId, label: 'Button →', target: null, style: 'default', popup: null });
     save(); openEditPanel(screenId);
+  });
+
+  // Drag-to-reorder play connections
+  let dragIdx = null;
+  editPanelContent.querySelectorAll('.edit-conn-row[data-conn-idx]').forEach(row => {
+    row.addEventListener('dragstart', (e) => {
+      dragIdx = parseInt(row.dataset.connIdx);
+      row.classList.add('dragging-row');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging-row');
+      editPanelContent.querySelectorAll('.edit-conn-row').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      editPanelContent.querySelectorAll('.edit-conn-row').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const dropIdx = parseInt(row.dataset.connIdx);
+      if (dragIdx !== null && dragIdx !== dropIdx) {
+        const [moved] = screen.connections.splice(dragIdx, 1);
+        screen.connections.splice(dropIdx, 0, moved);
+        save(); openEditPanel(screenId);
+      }
+    });
   });
 
   // Popup changes
