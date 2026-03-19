@@ -1,0 +1,55 @@
+/* Shared navigation header styles */
+.nav-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  background: var(--card, #FFFFFF);
+  border-bottom: 1px solid var(--border, #E4E1DA);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  z-index: 200;
+  font-size: 0.82rem;
+}
+.nav-header-title {
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text, #2C2A25);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-header-title:hover { color: var(--accent, #D4582A); }
+.nav-header-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.nav-header-tabs a {
+  text-decoration: none;
+  color: var(--muted, #6B6862);
+  font-size: 0.8rem;
+  font-weight: 400;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.nav-header-tabs a:hover { color: var(--text, #2C2A25); background: var(--surface, #F1EFE9); }
+.nav-header-tabs a.active {
+  color: var(--accent, #D4582A);
+  font-weight: 500;
+}
+.nav-sep {
+  color: var(--border, #E4E1DA);
+  font-size: 0.7rem;
+  user-select: none;
+}
+.nav-tab-locked {
+  color: var(--faint, #A09D96);
+  opacity: 0.5;
+  font-size: 0.8rem;
+  font-weight: 400;
+  padding: 0.35rem 0.75rem;
+  cursor: default;
+}
