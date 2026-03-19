@@ -272,14 +272,35 @@
     letter-spacing: 0.02em;
   }
   .play-btn:hover { background: #c04e22 !important; }
-  .add-screen-btn {
-    font-size: 0.75rem !important;
-    font-weight: 500 !important;
-    width: auto !important;
-    padding: 0 0.8rem !important;
-    color: var(--teal) !important;
+  /* Context menu */
+  .ctx-menu {
+    position: fixed;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.3rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    z-index: 300;
+    min-width: 160px;
+    display: none;
   }
-  .add-screen-btn:hover { background: var(--teal-soft) !important; }
+  .ctx-menu.open { display: block; }
+  .ctx-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
+    font-family: var(--font);
+    font-size: 0.8rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .ctx-menu button:hover { background: var(--surface); }
 
   /* ========== PLAY MODE ========== */
   .play-overlay {
@@ -721,8 +742,6 @@
   <button id="fitAll" title="Fit all">⊞</button>
   <button id="resetView" title="Reset">↺</button>
   <div class="sep"></div>
-  <button class="add-screen-btn" id="addScreenBtn">+ Add Screen</button>
-  <div class="sep"></div>
   <button class="play-btn" id="playBtn">▶ Play</button>
 </div>
 
@@ -740,6 +759,11 @@
     <button class="edit-panel-close" id="editPanelClose">✕</button>
   </div>
   <div id="editPanelContent"></div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx-menu" id="ctxMenu">
+  <button id="ctxAddScreen">+ Add screen here</button>
 </div>
 
 <script>
@@ -1354,14 +1378,29 @@ function closeEditPanel() {
 
 document.getElementById('editPanelClose').addEventListener('click', closeEditPanel);
 
-// ========== ADD SCREEN ==========
-document.getElementById('addScreenBtn').addEventListener('click', () => {
+// ========== CONTEXT MENU ==========
+const ctxMenu = document.getElementById('ctxMenu');
+let ctxCanvasX = 0, ctxCanvasY = 0;
+
+wrap.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  // Convert click position to canvas coordinates
+  const rect = wrap.getBoundingClientRect();
+  ctxCanvasX = (e.clientX - rect.left - panX) / scale;
+  ctxCanvasY = (e.clientY - rect.top - panY) / scale;
+  ctxMenu.style.left = e.clientX + 'px';
+  ctxMenu.style.top = e.clientY + 'px';
+  ctxMenu.classList.add('open');
+});
+
+document.addEventListener('click', () => ctxMenu.classList.remove('open'));
+document.addEventListener('contextmenu', (e) => {
+  if (!wrap.contains(e.target)) ctxMenu.classList.remove('open');
+});
+
+document.getElementById('ctxAddScreen').addEventListener('click', () => {
   const maxNum = Math.max(0, ...project.screens.map(s => s.num));
   const newId = 's' + (maxNum + 1);
-  // Place at center of current viewport
-  const wrap = document.getElementById('canvasWrap');
-  const cx = (wrap.clientWidth / 2 - panX) / scale;
-  const cy = (wrap.clientHeight / 2 - panY) / scale;
 
   const newScreen = {
     id: newId,
@@ -1371,8 +1410,8 @@ document.getElementById('addScreenBtn').addEventListener('click', () => {
     playDesc: '',
     image: '',
     color: 'var(--accent)',
-    x: Math.round(cx - 170),
-    y: Math.round(cy - 150),
+    x: Math.round(ctxCanvasX - 170),
+    y: Math.round(ctxCanvasY - 150),
     showMenuBtn: false,
     connections: [],
     popups: []
