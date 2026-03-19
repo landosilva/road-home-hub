@@ -153,7 +153,7 @@
     padding: 4rem 2rem;
   }
   .section-inner {
-    max-width: 900px;
+    max-width: 1000px;
     width: 100%;
   }
   .section-label {
@@ -267,11 +267,14 @@
   /* === STORY === */
   .story-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 280px;
     gap: 2.5rem;
-    align-items: center;
+    align-items: start;
   }
-  @media (max-width: 700px) { .story-content { grid-template-columns: 1fr; } }
+  @media (max-width: 800px) {
+    .story-content { grid-template-columns: 1fr; }
+    .story-carousel { justify-self: center; }
+  }
   .story-text h3 {
     font-size: 1.4rem;
     font-weight: 600;
@@ -285,16 +288,69 @@
     line-height: 1.8;
     margin-bottom: 0.75rem;
   }
-  .story-photo {
-    aspect-ratio: 4/3;
-    border-radius: 14px;
+
+  /* Stories carousel */
+  .story-carousel {
+    width: 280px;
+    flex-shrink: 0;
+    position: relative;
+    border-radius: 16px;
     overflow: hidden;
+    aspect-ratio: 9/16;
+    background: #1a1815;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
   }
-  .story-photo img {
+  .story-carousel img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: opacity 0.4s ease;
+  }
+  .story-carousel img.hidden { opacity: 0; position: absolute; inset: 0; }
+  .story-carousel img.active { opacity: 1; position: relative; }
+
+  /* Story progress bars */
+  .story-progress {
+    display: flex;
+    gap: 3px;
+    padding: 8px 8px 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+  }
+  .story-bar {
+    flex: 1;
+    height: 2.5px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .story-bar-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .story-bar.done .story-bar-fill { width: 100%; }
+  .story-bar.active .story-bar-fill { width: 0%; animation: storyFill 5s linear forwards; }
+
+  @keyframes storyFill { from { width: 0%; } to { width: 100%; } }
+
+  /* Tap to navigate */
+  .story-nav {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    z-index: 1;
+  }
+  .story-nav-left, .story-nav-right {
+    flex: 1;
+    cursor: pointer;
   }
 
   .footer {
@@ -382,7 +438,17 @@
         <p>The trip demanded everything from us — constant collaboration, patience, trust. And somewhere between the frozen pipes and the golden sunsets, we felt it — every challenge pulling us closer together.</p>
         <p>This game is my attempt to bottle that feeling — the joy of figuring things out together, the thrill of not knowing what's around the next corner, and the moment you realize the person next to you is the whole reason the trip matters.</p>
       </div>
-      <div class="story-photo"><img src="images/real-journey-photo.jpg" alt="The real journey"></div>
+      <div class="story-carousel" id="storyCarousel">
+        <div class="story-progress" id="storyProgress"></div>
+        <div class="story-nav">
+          <div class="story-nav-left" onclick="storyPrev()"></div>
+          <div class="story-nav-right" onclick="storyNext()"></div>
+        </div>
+        <img class="active" src="images/gallery/AAXC3657.JPG" alt="The crew — us and the cat in the van">
+        <img class="hidden" src="images/gallery/IMG_0976.jpg" alt="Sunset by the road">
+        <img class="hidden" src="images/gallery/IMG_1047.jpg" alt="Morning coffee with a view">
+        <img class="hidden" src="images/gallery/IMG_1834.jpg" alt="Carrying the cat at the station">
+      </div>
     </div>
   </div>
 </div>
@@ -395,6 +461,66 @@ const navHeader = document.querySelector('.nav-header');
 window.addEventListener('scroll', () => {
   navHeader.classList.toggle('visible', window.scrollY > window.innerHeight * 0.6);
 });
+
+// Stories carousel
+(function() {
+  const carousel = document.getElementById('storyCarousel');
+  const progressBar = document.getElementById('storyProgress');
+  let current = 0;
+  let timer = null;
+  const DURATION = 5000;
+
+  // Shuffle photo order on each page load
+  const imgArray = Array.from(carousel.querySelectorAll('img'));
+  for (let i = imgArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [imgArray[i], imgArray[j]] = [imgArray[j], imgArray[i]];
+  }
+  const nav = carousel.querySelector('.story-nav');
+  imgArray.forEach((img, i) => {
+    img.className = i === 0 ? 'active' : 'hidden';
+    carousel.appendChild(img);
+  });
+  const imgs = carousel.querySelectorAll('img');
+
+  // Build progress bars
+  imgs.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'story-bar';
+    bar.innerHTML = '<div class="story-bar-fill"></div>';
+    bar.addEventListener('click', (e) => { e.stopPropagation(); goTo(i); });
+    progressBar.appendChild(bar);
+  });
+
+  function goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= imgs.length) index = 0; // loop back
+    current = index;
+    imgs.forEach((img, i) => {
+      img.className = i === current ? 'active' : 'hidden';
+    });
+    const bars = progressBar.querySelectorAll('.story-bar');
+    bars.forEach((bar, i) => {
+      bar.className = 'story-bar' + (i < current ? ' done' : i === current ? ' active' : '');
+      // Reset animation by cloning
+      if (i === current) {
+        const fill = bar.querySelector('.story-bar-fill');
+        const newFill = fill.cloneNode(true);
+        bar.replaceChild(newFill, fill);
+        // Force reflow
+        void newFill.offsetWidth;
+        bar.className = 'story-bar active';
+      }
+    });
+    clearTimeout(timer);
+    timer = setTimeout(() => goTo(current + 1), DURATION);
+  }
+
+  window.storyNext = () => goTo(current + 1);
+  window.storyPrev = () => goTo(current - 1);
+
+  goTo(0);
+})();
 </script>
 </body>
 </html>
