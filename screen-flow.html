@@ -62,10 +62,12 @@
     margin-top: 48px;
     overflow: hidden;
     position: relative;
-    cursor: grab;
+    cursor: crosshair;
   }
   .canvas-wrap.dragging { cursor: grabbing; }
   .canvas-wrap.selecting { cursor: crosshair; }
+  .canvas-wrap.panning { cursor: grab; }
+  .canvas-wrap.panning.dragging { cursor: grabbing; }
 
   /* Selection rectangle */
   .selection-rect {
@@ -1393,8 +1395,8 @@ function applyTransform() {
 }
 
 // Track space key for pan mode
-window.addEventListener('keydown', (e) => { if (e.code === 'Space' && !e.repeat) { spaceHeld = true; wrap.style.cursor = 'grab'; } });
-window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spaceHeld = false; wrap.style.cursor = ''; } });
+window.addEventListener('keydown', (e) => { if (e.code === 'Space' && !e.repeat) { spaceHeld = true; wrap.classList.add('panning'); } });
+window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spaceHeld = false; wrap.classList.remove('panning'); } });
 
 wrap.addEventListener('mousedown', (e) => {
   // Middle-click or space+click = pan
