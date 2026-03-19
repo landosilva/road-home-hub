@@ -172,8 +172,8 @@ window.__screenFlowData = {
       "playDesc": "The trip falls apart. But the pet won't let it end here...",
       "image": "images/van-game-over.png",
       "color": "var(--accent)",
-      "x": 671,
-      "y": 1539,
+      "x": -126,
+      "y": 1513,
       "showMenuBtn": false,
       "connections": [
         {
@@ -194,8 +194,8 @@ window.__screenFlowData = {
       "playDesc": "Your journey, laid out as a visual diary. You made it home.",
       "image": "images/van-arrival-home.png",
       "color": "var(--blue)",
-      "x": 65,
-      "y": 1539,
+      "x": 324,
+      "y": 1530,
       "showMenuBtn": true,
       "connections": [
         {
@@ -245,10 +245,6 @@ window.__screenFlowData = {
     {
       "from": "s4",
       "to": "s8"
-    },
-    {
-      "from": "s8",
-      "to": "s2"
     }
   ]
 };
