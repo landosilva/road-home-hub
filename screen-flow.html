@@ -1548,14 +1548,21 @@ function setupMultiDrag() {
 
 wrap.addEventListener('wheel', (e) => {
   e.preventDefault();
-  const rect = wrap.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-  const prev = scale;
-  const factor = e.deltaY > 0 ? 0.95 : 1.05;
-  scale = Math.min(Math.max(scale * factor, 0.2), 2.5);
-  panX = mx - (mx - panX) * (scale / prev);
-  panY = my - (my - panY) * (scale / prev);
+  if (e.ctrlKey || e.metaKey) {
+    // Ctrl/Cmd + scroll = zoom (pinch-to-zoom on trackpad also sends ctrlKey)
+    const rect = wrap.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const prev = scale;
+    const factor = e.deltaY > 0 ? 0.95 : 1.05;
+    scale = Math.min(Math.max(scale * factor, 0.2), 2.5);
+    panX = mx - (mx - panX) * (scale / prev);
+    panY = my - (my - panY) * (scale / prev);
+  } else {
+    // Regular scroll = pan
+    panX -= e.deltaX;
+    panY -= e.deltaY;
+  }
   applyTransform();
 }, { passive: false });
 
