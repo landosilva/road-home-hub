@@ -1378,53 +1378,6 @@ function closeEditPanel() {
 
 document.getElementById('editPanelClose').addEventListener('click', closeEditPanel);
 
-// ========== CONTEXT MENU ==========
-const ctxMenu = document.getElementById('ctxMenu');
-let ctxCanvasX = 0, ctxCanvasY = 0;
-
-wrap.addEventListener('contextmenu', (e) => {
-  e.preventDefault();
-  // Convert click position to canvas coordinates
-  const rect = wrap.getBoundingClientRect();
-  ctxCanvasX = (e.clientX - rect.left - panX) / scale;
-  ctxCanvasY = (e.clientY - rect.top - panY) / scale;
-  ctxMenu.style.left = e.clientX + 'px';
-  ctxMenu.style.top = e.clientY + 'px';
-  ctxMenu.classList.add('open');
-});
-
-document.addEventListener('click', () => ctxMenu.classList.remove('open'));
-document.addEventListener('contextmenu', (e) => {
-  if (!wrap.contains(e.target)) ctxMenu.classList.remove('open');
-});
-
-document.getElementById('ctxAddScreen').addEventListener('click', () => {
-  const maxNum = Math.max(0, ...project.screens.map(s => s.num));
-  const newId = 's' + (maxNum + 1);
-
-  const newScreen = {
-    id: newId,
-    num: maxNum + 1,
-    title: 'New screen',
-    subtitle: 'Description goes here.',
-    playDesc: '',
-    image: '',
-    color: 'var(--accent)',
-    x: Math.round(ctxCanvasX - 170),
-    y: Math.round(ctxCanvasY - 150),
-    showMenuBtn: false,
-    connections: [],
-    popups: []
-  };
-
-  project.screens.push(newScreen);
-  saveProject(project);
-  renderCanvas();
-  renderPlayMode();
-  selectScreen(newId);
-  openEditPanel(newId);
-});
-
 // ========== CANVAS PAN/ZOOM ==========
 const wrap = document.getElementById('canvasWrap');
 const canvas = document.getElementById('canvas');
@@ -1552,6 +1505,52 @@ function focusScreen(id) {
   panY = (wrap.clientHeight / 2) - (st + sh / 2) * scale;
   applyTransform();
 }
+
+// ========== CONTEXT MENU ==========
+const ctxMenu = document.getElementById('ctxMenu');
+let ctxCanvasX = 0, ctxCanvasY = 0;
+
+wrap.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  const rect = wrap.getBoundingClientRect();
+  ctxCanvasX = (e.clientX - rect.left - panX) / scale;
+  ctxCanvasY = (e.clientY - rect.top - panY) / scale;
+  ctxMenu.style.left = e.clientX + 'px';
+  ctxMenu.style.top = e.clientY + 'px';
+  ctxMenu.classList.add('open');
+});
+
+document.addEventListener('click', () => ctxMenu.classList.remove('open'));
+document.addEventListener('contextmenu', (e) => {
+  if (!wrap.contains(e.target)) ctxMenu.classList.remove('open');
+});
+
+document.getElementById('ctxAddScreen').addEventListener('click', () => {
+  const maxNum = Math.max(0, ...project.screens.map(s => s.num));
+  const newId = 's' + (maxNum + 1);
+
+  const newScreen = {
+    id: newId,
+    num: maxNum + 1,
+    title: 'New screen',
+    subtitle: 'Description goes here.',
+    playDesc: '',
+    image: '',
+    color: 'var(--accent)',
+    x: Math.round(ctxCanvasX - 170),
+    y: Math.round(ctxCanvasY - 150),
+    showMenuBtn: false,
+    connections: [],
+    popups: []
+  };
+
+  project.screens.push(newScreen);
+  saveProject(project);
+  renderCanvas();
+  renderPlayMode();
+  selectScreen(newId);
+  openEditPanel(newId);
+});
 
 // ========== PLAY MODE ==========
 let playIdx = 0;
