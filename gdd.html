@@ -412,7 +412,7 @@
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-sub">Game GDDument v0.4</div>
+      <div class="sidebar-sub">Game GDDument v0.5</div>
     </div>
     <div class="sidebar-nav">
       <div class="sidebar-group-label">World &amp; story</div>
@@ -422,13 +422,13 @@
 
       <div class="sidebar-group-label">Gameplay</div>
       <a class="nav-item" href="#driving"><span class="nav-num">04</span> Driving phase</a>
-      <a class="nav-item" href="#rest-defense"><span class="nav-num">05</span> Rest &amp; defense</a>
+      <a class="nav-item" href="#rest-defense"><span class="nav-num">05</span> Rest &amp; sleep</a>
       <a class="nav-item" href="#cargo"><span class="nav-num">06</span> Cargo &amp; return</a>
 
       <div class="sidebar-group-label">Systems</div>
       <a class="nav-item" href="#resources"><span class="nav-num">07</span> Resources</a>
       <a class="nav-item" href="#companion"><span class="nav-num">08</span> Companion &amp; morale</a>
-      <a class="nav-item" href="#the-cat"><span class="nav-num">09</span> The cat</a>
+      <a class="nav-item" href="#the-cat"><span class="nav-num">09</span> The pet</a>
       <a class="nav-item" href="#content-creation"><span class="nav-num">10</span> Content creation</a>
 
       <div class="sidebar-group-label">Meta</div>
@@ -463,7 +463,7 @@
     <ul>
       <li><strong>Cozy despite the danger</strong> — the van is warm, the road is uncertain. The contrast is the soul of the game.</li>
       <li><strong>A relationship tested and strengthened</strong> — the journey is hard, but you come out the other side closer than before.</li>
-      <li><strong>Real road trip texture</strong> — buying bed sheets in a foreign supermarket, arguing about music, finding the perfect sunset spot for a photo. The mundane IS the magic.</li>
+      <li><strong>Real road trip texture</strong> — your first stop at a supermarket in a language you don't speak, her choosing every song, chasing the perfect light for one last drone shot. The mundane IS the magic.</li>
     </ul>
   </div>
 
@@ -499,29 +499,35 @@
     </div>
 
     <h3>Core loop</h3>
-    <p>Within each leg, the game flows between driving and resting. You must rest — but when and where is up to you. Night is usually the most practical time, but a quiet daytime spot with curtains drawn works too.</p>
+    <p>Each day is about survival. Drive as far as you can, manage your resources, find somewhere to sleep, and hope nothing goes wrong in the night. The goal is simple: reach the destination before the trip falls apart.</p>
 
     <div class="loop">
       <div class="loop-phase" style="background:var(--amber-glow);">
         <div class="loop-icon">🗺️</div>
         <div class="loop-name" style="color:var(--amber);">Plan</div>
-        <div class="loop-desc" style="color:var(--amber);">Choose route</div>
+        <div class="loop-desc" style="color:var(--amber);">Choose today's route</div>
       </div>
       <div class="loop-phase" style="background:var(--accent-glow);">
         <div class="loop-icon">🚐</div>
         <div class="loop-name" style="color:var(--accent);">Drive</div>
-        <div class="loop-desc" style="color:var(--accent);">Move + scavenge</div>
+        <div class="loop-desc" style="color:var(--accent);">Travel + explore + photograph</div>
       </div>
       <div class="loop-phase" style="background:var(--purple-glow);">
         <div class="loop-icon">📍</div>
         <div class="loop-name" style="color:var(--purple);">Stop</div>
-        <div class="loop-desc" style="color:var(--purple);">Find a rest spot</div>
+        <div class="loop-desc" style="color:var(--purple);">Find a spot to sleep</div>
       </div>
       <div class="loop-phase" style="background:var(--blue-glow);">
-        <div class="loop-icon">🛡️</div>
-        <div class="loop-name" style="color:var(--blue);">Rest</div>
-        <div class="loop-desc" style="color:var(--blue);">Sleep + maybe defend</div>
+        <div class="loop-icon">🌙</div>
+        <div class="loop-name" style="color:var(--blue);">Sleep</div>
+        <div class="loop-desc" style="color:var(--blue);">Timelapse + events</div>
       </div>
+    </div>
+
+    <h3>The roguelike frame</h3>
+    <p>This is a roguelike. Your first van is terrible, your first camera is a phone, your gear is minimal. When the trip fails — van breaks down, money runs out, morale collapses — something strange happens. Your pet looks at you with those knowing eyes, and everything rewinds. You're back at the start, but not quite from scratch.</p>
+    <div class="callout purple">
+      <strong>The guardian rewinder:</strong> The pet is more than a companion — it's a mysterious being that refuses to let the story end badly. The couple doesn't know. Only the player shares this secret with the pet. Each run, the pet carries forward what matters: your photos, your reputation, your knowledge of what's out there. On the final successful run, the pet can finally just... be a pet.
     </div>
   </div>
 
@@ -579,17 +585,18 @@
       <li>Monitors energy, hunger, and bathroom needs</li>
     </ul>
 
-    <h3>The co-pilot</h3>
+    <h3>The co-pilot / photographer</h3>
     <ul>
       <li>Manages the map and navigation — spots upcoming stops, plans detours</li>
-      <li>Controls the radio / music — finding songs that match both moods</li>
+      <li>Controls the radio / music — she picks every song, and that's part of the magic</li>
       <li>Keeps energy and morale up — suggests breaks, activities, conversations</li>
       <li>Spots gas stations, rest areas, and points of interest</li>
       <li>Manages resources — tracks food, water, fuel levels</li>
+      <li><strong>Full camera control</strong> — drone (aerial/cinematic), GoPro (action), phone (quick shots). Photography is a core objective, and the co-pilot owns all of it.</li>
     </ul>
 
     <div class="callout">
-      <strong>Both are needed.</strong> Driving alone while your partner sleeps is possible but lonely — morale drops, you miss points of interest, and fatigue builds faster. The game is designed so that cooperation feels natural and rewarding.
+      <strong>One drives, one captures.</strong> The role split creates natural asymmetry — the pilot focuses on the road, the photographer focuses on the world. Driving alone while your partner sleeps is possible but lonely — morale drops, you miss photo opportunities, and fatigue builds faster. Cooperation isn't a mechanic; it's the whole game.
     </div>
 
     <h3>Exploration stops</h3>
@@ -616,51 +623,52 @@
     </div>
   </div>
 
-  <!-- 05 REST & DEFENSE -->
+  <!-- 05 REST & SLEEP -->
   <div class="section" id="rest-defense">
     <div class="section-header">
       <span class="section-num">05</span>
-      <h2>Phase 2 — Rest &amp; defense</h2>
+      <h2>Phase 2 — Rest &amp; sleep</h2>
     </div>
 
     <div class="callout blue">
-      <strong>Key design note:</strong> Rest is the requirement — you physically cannot keep driving forever. Defense is a consequence of where and how you rest, not a guaranteed phase. Night is the most natural time to rest, but a peaceful daytime spot with curtains drawn can work too. The tradeoff: resting during the day costs driving hours.
+      <strong>Key design note:</strong> Rest is the requirement — you physically cannot keep driving forever. Where you choose to sleep determines what might happen during the night. Night is the most natural time to rest, but a peaceful daytime spot with curtains drawn can work too. The tradeoff: resting during the day costs driving hours.
     </div>
 
-    <h3>Finding a rest spot</h3>
-    <p>The perfect spot is safe, has great views, and is peaceful. But sometimes the only option is a shady gas station parking lot. The player decides when to stop and where.</p>
+    <h3>Finding a spot</h3>
+    <p>The perfect spot is safe, has great views, and is peaceful. But sometimes the only option is a shady gas station parking lot. The player decides when to stop and where — and that choice has consequences.</p>
     <ul>
-      <li><strong>Campgrounds</strong> — safe, expensive, may require detour. Deep rest, rare threats.</li>
-      <li><strong>Well-lit rest areas</strong> — moderate safety, accessible. Decent rest, occasional threats.</li>
-      <li><strong>Roadside / forest clearings</strong> — free, risky. Light rest, frequent threats.</li>
+      <li><strong>Campgrounds</strong> — safe, expensive, may require detour. Deep rest, events are rare and mild.</li>
+      <li><strong>Well-lit rest areas</strong> — moderate safety, accessible. Decent rest, occasional events.</li>
+      <li><strong>Roadside / forest clearings</strong> — free, risky. Light rest, frequent events.</li>
       <li><strong>Gas station parking</strong> — grim, but available. Light rest, unpredictable.</li>
       <li><strong>Daytime rest</strong> — curtains drawn, peaceful spot. Short but safe rest, costs driving time.</li>
     </ul>
 
-    <h3>Passive tower defense</h3>
-    <p>Before sleeping, the player sets up defenses around the van — barricades, alarms, traps, lights. Then you go to sleep and <strong>watch</strong> your defenses work (or fail). This is not an active gameplay phase — it's a cinematic tension sequence. You observe, hope, and learn what works.</p>
-
-    <div class="callout purple">
-      <strong>Waking up to intervene:</strong> If things go badly, the player can choose to wake up and manually defend. But this is costly — broken sleep means severe fatigue penalties the next day. It's an emergency option, not a strategy.
-    </div>
+    <h3>The sleep timelapse</h3>
+    <p>When you go to sleep, you choose how many hours to rest. Then you watch the night pass as a timelapse — the sky changing, the van settling, ambient sounds shifting. It's not a skip; it's a visual experience.</p>
+    <p>But depending on where you parked, events may interrupt the timelapse. A noise outside. An animal scratching at the van. Someone knocking on the window. A sudden storm. The location determines the probability and severity of events — sleep in a campground and you'll likely rest peacefully. Sleep in a forest clearing and you might not sleep at all.</p>
 
     <div class="two-col">
       <div class="card">
-        <h4>Defense setup</h4>
+        <h4>Possible night events</h4>
         <ul>
-          <li>Place barricades, traps, alarms, lights</li>
-          <li>Terrain around the camp affects placement</li>
-          <li>Better spots = fewer approach vectors</li>
-          <li>Resources spent on defense can't be used elsewhere</li>
+          <li>Strange noises — wake up, lose sleep quality</li>
+          <li>Someone tries the door handle — panic moment</li>
+          <li>Animal encounter — could damage the van</li>
+          <li>Storm rolls in — van rocks, leaks if damaged</li>
+          <li>Pet gets restless — needs attention mid-sleep</li>
+          <li>Beautiful sunrise — wake early for a great photo</li>
         </ul>
       </div>
       <div class="card">
-        <h4>Threats</h4>
+        <h4>What affects events</h4>
         <ul>
-          <li>Bandits / thieves — steal supplies</li>
-          <li>Wild animals — damage the van</li>
-          <li>Supernatural / zombie mode (unlockable)</li>
-          <li>Threat level scales with days elapsed</li>
+          <li>Location type (campground vs. roadside vs. forest)</li>
+          <li>Region and country</li>
+          <li>Weather conditions</li>
+          <li>How visible/hidden the van is</li>
+          <li>Days elapsed in the run</li>
+          <li>Pure luck</li>
         </ul>
       </div>
     </div>
@@ -719,11 +727,11 @@
         <tr><td class="r-name">Gas</td><td class="r-desc">Powers the stove for cooking. No gas = cold meals only = morale hit.</td></tr>
         <tr><td class="r-name">Electricity</td><td class="r-desc">Powers lights, devices, fridge. Solar panels help but aren't always enough. Some vans depend on it more than others.</td></tr>
         <tr><td class="r-name">Food</td><td class="r-desc">Feeds you and your partner. Quality matters — good meals boost morale, snacks just keep you alive.</td></tr>
-        <tr><td class="r-name">Cat supplies</td><td class="r-desc">Cat food and litter. Neglect triggers chaos events.</td></tr>
+        <tr><td class="r-name">Camera gear</td><td class="r-desc">Phone (always available), GoPro, drone. Better gear = better photos = more income. Unlocked across runs.</td></tr>
         <tr><td class="r-name">Van health</td><td class="r-desc">Damaged by driving hazards and rest encounters. At zero, the run is over.</td></tr>
         <tr><td class="r-name">Money</td><td class="r-desc">Buy everything. Finite — earned through side tasks, scavenging, or content creation.</td></tr>
         <tr><td class="r-name">Morale</td><td class="r-desc">Both partners. Low morale = navigation penalties, arguments, forced stops.</td></tr>
-        <tr><td class="r-name">Defense parts</td><td class="r-desc">Barricades, traps, alarms, lights. Consumed or damaged during rest encounters.</td></tr>
+        <tr><td class="r-name">Pet supplies</td><td class="r-desc">Species-specific food, waste management supplies. Neglect triggers chaos events and escape attempts.</td></tr>
         <tr><td class="r-name">Gear</td><td class="r-desc">Snow chains, spare tire, tools, curtains, hose. Required for specific challenges.</td></tr>
       </tbody>
     </table>
@@ -754,7 +762,7 @@
 
     <h3>Morale effects</h3>
     <ul>
-      <li><strong>High:</strong> better navigation hints, helps scavenging, spots dangers early, bonus defense placement, better photos</li>
+      <li><strong>High:</strong> better navigation hints, helps scavenging, spots dangers early, better photos, finds great sleep spots</li>
       <li><strong>Low:</strong> refuses to navigate, demands stops, won't help set up camp, triggers arguments that debuff driving, silent treatment (no co-pilot bonuses)</li>
     </ul>
 
@@ -763,30 +771,42 @@
     </div>
   </div>
 
-  <!-- 09 THE CAT -->
+  <!-- 09 THE PET -->
   <div class="section" id="the-cat">
     <div class="section-header">
       <span class="section-num">09</span>
-      <h2>The cat</h2>
+      <h2>The pet</h2>
     </div>
-    <p>The cat is both a logistical challenge and a wildcard. It joins the journey on the return leg (you're picking it up along with everything else) and changes the game dynamics significantly.</p>
+    <p>The pet is the heart of the game — and its deepest secret. To the couple, it's a beloved companion that joins the journey on the return leg. To the player, it's something more: a guardian that exists outside of time, quietly rewinding the story whenever things go wrong.</p>
+
+    <div class="callout purple">
+      <strong>The rewinder.</strong> The couple doesn't know. They think they're on a road trip. But the pet has done this before — many times. When the van breaks down for good, when the money runs out, when everything falls apart, the pet looks at you with those knowing eyes... and time resets. Photos survive. Reputation carries over. The pet remembers everything. On the final successful run, it can finally just be a pet.
+    </div>
+
+    <h3>Pet selection</h3>
+    <p>Players choose their pet at the start. Each species has different needs, chaos potential, and rewind flavor:</p>
+    <ul>
+      <li><strong>Cat</strong> — nine lives, literally. Subtle, mysterious. Blinks and time rewinds. Feels like it exists outside of normal rules. Independent but occasionally chaotic.</li>
+      <li><strong>Dog</strong> — loyal, dramatic. Howls at the moment of failure, time cracks and resets. More emotionally expressive — whines near previously dangerous spots, gets excited near good ones.</li>
+      <li><strong>Others (unlockable)</strong> — a parrot that "repeats" the timeline, a turtle that's "been through this before." Each with unique mechanics and personality.</li>
+    </ul>
 
     <div class="two-col">
       <div class="card">
         <h4>Needs</h4>
         <ul>
-          <li>Regular feeding (cat food resource)</li>
-          <li>Litter management (uses cat supplies + generates waste)</li>
+          <li>Regular feeding (species-specific food resource)</li>
+          <li>Waste management (litter, walks, etc.)</li>
           <li>Doesn't love long drives — stress builds over time</li>
           <li>Needs attention during rest stops</li>
-          <li>Stress affects its behaviour unpredictably</li>
+          <li>Stress affects behaviour unpredictably</li>
         </ul>
       </div>
       <div class="card">
         <h4>Chaos &amp; charm</h4>
         <ul>
-          <li>Neglect → knocks things over, escapes at stops, yowls at night</li>
-          <li>Happy cat → warns of threats, boosts morale, is adorable</li>
+          <li>Neglect → knocks things over, escapes at stops, disrupts sleep</li>
+          <li>Happy pet → subtle warnings, morale boost, adorable</li>
           <li>Random events: finds items, blocks the gearstick, sits on the map</li>
           <li>Emotional anchor — the reason you're making this trip</li>
           <li>Great photo subject (content creation bonus)</li>
@@ -794,8 +814,11 @@
       </div>
     </div>
 
-    <h3>Cat escape events</h3>
-    <p>A stressed or neglected cat will try to bolt when a door opens. Escape attempts are dramatic, time-critical events — you have to catch the cat before it disappears. Panicked reactions can make things worse: slamming a door too fast can injure the cat, leading to a vet detour (time + money) and a massive morale hit for both partners.</p>
+    <h3>Subtle rewinder tells</h3>
+    <p>The pet has déjà vu. It stares at spots where things went wrong in previous runs. It gets nervous before events it's "seen before." It sometimes glances at the camera — at the player — as if sharing a secret. These are never explained in-game. The couple doesn't notice. But the player does.</p>
+
+    <h3>Escape events</h3>
+    <p>A stressed or neglected pet will try to bolt when a door opens. Escape attempts are dramatic, time-critical events — you have to catch them before they disappear. Panicked reactions can make things worse: slamming a door too fast can cause injury, leading to a vet detour (time + money) and a massive morale hit for both partners.</p>
 
     <div class="callout">
       <strong>From the real trip:</strong> The cat tried to escape once. In the rush to stop her, the door closed on her paw. She was okay — but the panic, the guilt, the scramble. These are the moments that define a road trip, and they translate directly into high-stakes gameplay events.
@@ -807,15 +830,23 @@
       <span class="section-num">10</span>
       <h2>Content creation</h2>
     </div>
-    <p>You travel with a drone, a GoPro, and a 360 camera. Capturing the journey is part of the experience — and potentially a source of income.</p>
+    <p>Photography is not a side activity — it's one of the core objectives of the game. One player has full control over all cameras: drone (aerial/cinematic), GoPro (action), and phone (quick shots). Capturing the journey is part of the experience, a source of income, and the primary way the trip is remembered across runs.</p>
 
-    <h3>How it works</h3>
+    <h3>Camera role</h3>
+    <p>The co-pilot/photographer owns all camera equipment. This creates natural role asymmetry: the pilot focuses on the road, the photographer focuses on the world. Setting up a drone shot takes time. Catching a fleeting moment with the phone requires quick reflexes. Choosing the right camera for the right moment is a skill.</p>
+
+    <h3>Photo scoring system</h3>
+    <p>Every photo is scored across four axes:</p>
     <ul>
-      <li><strong>Photo opportunities</strong> appear at scenic spots, interesting moments, and random encounters. The player decides whether to stop and capture.</li>
-      <li><strong>Quality depends on context:</strong> golden hour lighting, dramatic landscapes, the cat doing something cute, a beautiful campsite at sunset — all produce better content than a grey motorway at noon.</li>
-      <li><strong>Equipment matters:</strong> drone shots are cinematic but take time to set up. GoPro captures action moments. 360 cam gets atmosphere. Phone is always available but lower quality.</li>
-      <li><strong>Morale boost:</strong> stopping for content is a natural break that benefits both partners.</li>
+      <li><strong>Object rarity</strong> — what's in the frame? A common highway guardrail scores low. A wild deer at sunrise scores high. Rare landmarks, weather phenomena, and the pet doing something unexpected are jackpots.</li>
+      <li><strong>Combination synergy</strong> — objects that work together score bonus points. Pet + sunset + campsite. Drone + mountains + golden hour. The system rewards composition, not just pointing the camera.</li>
+      <li><strong>Camera angle</strong> — drone aerial, low-angle GoPro, eye-level phone — each angle has strengths. The right angle for the right subject multiplies the score.</li>
+      <li><strong>Subject framing</strong> — how much of the subject is in frame, how centered, how much negative space. A perfectly framed shot of a distant castle beats a zoomed-in blur.</li>
     </ul>
+
+    <div class="callout teal">
+      <strong>Design intent:</strong> The scoring system should make photography feel like a skill that improves over runs. Early runs with a phone camera produce decent shots. Later runs with a drone and experience produce stunning ones. The pet — who remembers previous runs — subtly positions itself for better shots over time.
+    </div>
 
     <h3>Social media feed</h3>
     <ul>
@@ -840,6 +871,20 @@
       <h2>Roguelike elements</h2>
     </div>
 
+    <h3>The pet's gift</h3>
+    <p>When a run fails, the pet rewinds time. But it protects certain things across the reset — things it "carries" through the loop:</p>
+    <ul>
+      <li><strong>Photos</strong> — your gallery persists across runs. The pet protected them.</li>
+      <li><strong>Reputation / followers</strong> — the internet remembers, even across timelines.</li>
+      <li><strong>Unlocked van types</strong> — better vans become available as you learn.</li>
+      <li><strong>Gear access</strong> — you know where to find things now. Shops you discovered stay on the map.</li>
+      <li><strong>Camera upgrades</strong> — start with a phone, eventually earn access to drone and GoPro.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>First run vs. tenth run:</strong> Your first run is a couple in a terrible van with a phone camera and no idea what they're doing. By the tenth run, you have a reliable van, a drone, knowledge of every good campsite between Barcelona and Vilnius, and a pet that seems weirdly calm about everything.
+    </div>
+
     <div class="two-col">
       <div class="card">
         <h4>Procedural generation</h4>
@@ -849,24 +894,26 @@
           <li>Shop inventories differ per region and run</li>
           <li>Some gear only available in specific countries</li>
           <li>Weather and seasonal conditions shift</li>
-          <li>Threat composition varies by region</li>
+          <li>Night event composition varies by region</li>
         </ul>
       </div>
       <div class="card">
-        <h4>Permadeath &amp; meta-progression</h4>
+        <h4>Failure states</h4>
         <ul>
-          <li>Fail = restart from a new random city pair</li>
-          <li>Unlock new van types across runs</li>
-          <li>Unlock harder routes and modifiers</li>
-          <li>Unlock "zombie mode" after first clear</li>
-          <li>Persistent garage: van cosmetics carry over</li>
-          <li>Photo gallery persists across runs</li>
+          <li>Van health reaches zero — stranded</li>
+          <li>Money runs out — can't refuel or eat</li>
+          <li>Morale collapses — partner refuses to continue</li>
+          <li>Too many sleepless nights — can't drive safely</li>
+          <li>Pet escapes and can't be found — heartbreak ending</li>
         </ul>
       </div>
     </div>
 
     <h3>Run variety</h3>
     <p>Different start/end city pairs create vastly different journeys. Barcelona → Vilnius crosses mountain ranges and plains. Lisbon → Helsinki means coastal roads then Scandinavian cold. Each route teaches different strategies and requires different gear — and you buy that gear from the countries you pass through.</p>
+
+    <h3>The final run</h3>
+    <p>The run where everything clicks. The van holds together, the couple is in sync, the photos are stunning, and you pull into your destination with everything — and everyone — intact. The pet relaxes for the first time. No more knowing glances. No more déjà vu. It's over. You made it home.</p>
   </div>
 
   <!-- 12 CO-OP -->
@@ -885,7 +932,7 @@
       <li><strong>Pilot:</strong> drives the van, manages speed, avoids hazards, keeps conversations going.</li>
       <li><strong>Co-pilot:</strong> manages the map, navigation, resource tracking, radio/music, spots POIs and gas stations, plans stops.</li>
       <li><strong>Music:</strong> the co-pilot picks the music — finding something that fits the mood of both. <em>(Early idea — mechanics TBD.)</em></li>
-      <li><strong>Rest phase:</strong> both players collaborate on camp setup and defense placement.</li>
+      <li><strong>Rest phase:</strong> both players collaborate on camp setup — choosing where to park, preparing dinner, setting up for the night.</li>
       <li><strong>Role swap:</strong> players can swap pilot/co-pilot roles between stretches.</li>
     </ul>
 
@@ -934,12 +981,12 @@
       <li><span class="q-mark">?</span> What camera perspective works best for driving? Top-down, isometric, third-person chase?</li>
       <li><span class="q-mark">?</span> How does the procedural map generation work? Node-based paths or open 2D terrain?</li>
       <li><span class="q-mark">?</span> What's the art style? Pixel art, hand-drawn, low-poly 3D, illustrated?</li>
-      <li><span class="q-mark">?</span> How does tower defense placement work? Grid-based or free placement?</li>
-      <li><span class="q-mark">?</span> How does the passive defense viewing work as a gameplay moment? Skippable? Fast-forwardable? Cinematic camera?</li>
+      <li><span class="q-mark">?</span> How does the sleep timelapse work interactively? Can you fast-forward? How are events presented?</li>
+      <li><span class="q-mark">?</span> How does the pet rewinder manifest visually? Subtle or dramatic? Does it change per species?</li>
       <li><span class="q-mark">?</span> How long is a single run in real-time? Each leg 2 hours? Total 4 hours?</li>
       <li><span class="q-mark">?</span> How does the packing puzzle work mechanically? Tetris-style? Drag and drop?</li>
       <li><span class="q-mark">?</span> How does the music/radio mechanic work? Mood matching? Morale effect? Genre preferences per character?</li>
-      <li><span class="q-mark">?</span> How does the social media system determine photo quality and engagement?</li>
+      <li><span class="q-mark">?</span> How does the photo scoring system work technically? Real-time detection or preset compositions?</li>
       <li><span class="q-mark">?</span> How does the temperature system work mechanically? Is it a continuous simulation or event-based?</li>
       <li><span class="q-mark">?</span> How does thawing frozen water systems work? Time + heat source? A minigame? An automatic penalty?</li>
       <li><span class="q-mark">?</span> How do different van types handle cold? Insulation as a stat?</li>
@@ -959,6 +1006,7 @@
       <tr><td>0.2</td><td>Rest decoupled from nighttime. Players choose when to rest. Splash art added. Visual redesign.</td></tr>
       <tr><td>0.3</td><td>Major expansion from real story context. Two-leg structure, van preparation, cargo system, expanded resources, passive TD, content creation, co-pilot role detail.</td></tr>
       <tr><td>0.4</td><td>Weather &amp; temperature as core system (freezing water, ice roads, snow, heat). Cat escape events with injury consequences. Technical notes: shared camera (no split screen), local + online co-op, character/van/pet customization. Updated open questions.</td></tr>
+      <tr><td>0.5</td><td>Major redesign: tower defense removed, replaced with sleep timelapse + location-based night events. Pet becomes guardian rewinder (roguelike narrative frame). Photo scoring system (rarity, synergy, angle, framing). Camera role split — co-pilot as dedicated photographer. Pet generalized beyond cat (dog, unlockables). Roguelike progression reframed around pet's protection.</td></tr>
     </table>
   </div>
 
