@@ -163,7 +163,7 @@
     text-transform: uppercase;
     letter-spacing: 0.14em;
     color: var(--faint);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0;
   }
   .section-title {
     font-size: 2rem;
@@ -269,7 +269,7 @@
     display: grid;
     grid-template-columns: 1fr 380px;
     gap: 2.5rem;
-    align-items: center;
+    align-items: stretch;
   }
   @media (max-width: 900px) {
     .story-content { grid-template-columns: 1fr; }
@@ -278,7 +278,7 @@
   .story-text h3 {
     font-size: 1.4rem;
     font-weight: 600;
-    margin-top: -0.25rem;
+    margin-top: 0;
     margin-bottom: 1rem;
     letter-spacing: -0.3px;
   }
@@ -297,9 +297,11 @@
     position: relative;
     border-radius: 16px;
     overflow: hidden;
-    aspect-ratio: 3/4;
     background: #1a1815;
     box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  }
+  @media (max-width: 900px) {
+    .story-carousel { aspect-ratio: 3/4; }
   }
   .story-carousel img {
     width: 100%;
