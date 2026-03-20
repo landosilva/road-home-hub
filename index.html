@@ -267,13 +267,13 @@
   /* === STORY === */
   .story-content {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 320px;
     gap: 2.5rem;
-    align-items: stretch;
+    align-items: center;
   }
   @media (max-width: 900px) {
     .story-content { grid-template-columns: 1fr; }
-    .story-carousel { justify-self: center; }
+    .story-carousel { justify-self: center; max-width: 300px; }
   }
   .story-text h3 {
     font-size: 1.4rem;
@@ -290,28 +290,44 @@
     margin-bottom: 0.75rem;
   }
 
-  /* Stories carousel */
+  /* Polaroid carousel */
   .story-carousel {
-    width: 380px;
-    flex-shrink: 0;
     position: relative;
-    border-radius: 16px;
+    background: #fff;
+    padding: 10px 10px 52px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+    transform: rotate(1.5deg);
+  }
+  .polaroid-photo-wrap {
+    position: relative;
+    aspect-ratio: 3/4;
     overflow: hidden;
     background: #1a1815;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
   }
-  @media (max-width: 900px) {
-    .story-carousel { aspect-ratio: 3/4; }
-  }
-  .story-carousel img {
+  .polaroid-photo-wrap img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
     transition: opacity 0.4s ease;
   }
-  .story-carousel img.hidden { opacity: 0; position: absolute; inset: 0; }
-  .story-carousel img.active { opacity: 1; position: absolute; inset: 0; }
+  .polaroid-photo-wrap img.hidden { opacity: 0; position: absolute; inset: 0; }
+  .polaroid-photo-wrap img.active { opacity: 1; position: relative; }
+  .polaroid-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    font-style: italic;
+  }
 
   /* Story progress bars */
   .story-progress {
@@ -442,15 +458,18 @@
         <p>This game is my attempt to bottle that feeling — the joy of figuring things out together, the thrill of not knowing what's around the next corner, and the moment you realize the person next to you is the whole reason the trip matters.</p>
       </div>
       <div class="story-carousel" id="storyCarousel">
-        <div class="story-progress" id="storyProgress"></div>
-        <div class="story-nav">
-          <div class="story-nav-left" onclick="storyPrev()"></div>
-          <div class="story-nav-right" onclick="storyNext()"></div>
+        <div class="polaroid-photo-wrap">
+          <div class="story-progress" id="storyProgress"></div>
+          <div class="story-nav">
+            <div class="story-nav-left" onclick="storyPrev()"></div>
+            <div class="story-nav-right" onclick="storyNext()"></div>
+          </div>
+          <img class="active" src="images/gallery/AAXC3657.JPG" alt="The crew — us and the cat in the van" data-location="🇱🇹 Vilnius, Lithuania">
+          <img class="hidden" src="images/gallery/IMG_0976.jpg" alt="Sunset by the road" data-location="🇪🇸 Calella de Palafrugell, Spain">
+          <img class="hidden" src="images/gallery/IMG_1047.jpg" alt="Morning coffee with a view" data-location="🇪🇸 Tossa de Mar, Spain">
+          <img class="hidden" src="images/gallery/IMG_1834.jpg" alt="Carrying the cat at the station" data-location="🇵🇱 Warsaw, Poland">
         </div>
-        <img class="active" src="images/gallery/AAXC3657.JPG" alt="The crew — us and the cat in the van">
-        <img class="hidden" src="images/gallery/IMG_0976.jpg" alt="Sunset by the road">
-        <img class="hidden" src="images/gallery/IMG_1047.jpg" alt="Morning coffee with a view">
-        <img class="hidden" src="images/gallery/IMG_1834.jpg" alt="Carrying the cat at the station">
+        <div class="polaroid-label" id="polaroidLabel"></div>
       </div>
     </div>
   </div>
@@ -468,23 +487,24 @@ window.addEventListener('scroll', () => {
 // Stories carousel
 (function() {
   const carousel = document.getElementById('storyCarousel');
+  const photoWrap = carousel.querySelector('.polaroid-photo-wrap');
   const progressBar = document.getElementById('storyProgress');
+  const locationLabel = document.getElementById('polaroidLabel');
   let current = 0;
   let timer = null;
   const DURATION = 5000;
 
   // Shuffle photo order on each page load
-  const imgArray = Array.from(carousel.querySelectorAll('img'));
+  const imgArray = Array.from(photoWrap.querySelectorAll('img'));
   for (let i = imgArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [imgArray[i], imgArray[j]] = [imgArray[j], imgArray[i]];
   }
-  const nav = carousel.querySelector('.story-nav');
   imgArray.forEach((img, i) => {
     img.className = i === 0 ? 'active' : 'hidden';
-    carousel.appendChild(img);
+    photoWrap.appendChild(img);
   });
-  const imgs = carousel.querySelectorAll('img');
+  const imgs = photoWrap.querySelectorAll('img');
 
   // Build progress bars
   imgs.forEach((_, i) => {
@@ -515,6 +535,8 @@ window.addEventListener('scroll', () => {
         bar.className = 'story-bar active';
       }
     });
+    // Update location label
+    locationLabel.textContent = imgs[current].dataset.location || '';
     clearTimeout(timer);
     timer = setTimeout(() => goTo(current + 1), DURATION);
   }
