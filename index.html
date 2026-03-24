@@ -378,7 +378,7 @@
   /* === SUPPORT === */
   .support-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1rem;
     margin-top: 0.5rem;
   }
@@ -425,6 +425,15 @@
     transition: gap 0.15s;
   }
   .support-card:hover .hub-arrow { gap: 0.6rem; }
+  .support-card.disabled {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .support-card.disabled:hover {
+    border-color: var(--border);
+    transform: none;
+    box-shadow: none;
+  }
   .support-text {
     font-size: 0.92rem;
     color: var(--muted);
@@ -558,6 +567,13 @@
         <p>Join as a monthly supporter and get early access to devlogs, builds, and behind-the-scenes updates.</p>
         <div class="hub-arrow">See membership tiers <span>&rarr;</span></div>
       </a>
+      <div class="support-card disabled">
+        <div class="hub-icon" style="background:var(--purple-soft);color:var(--purple);">&#9993;</div>
+        <div class="hub-badge" style="color:var(--purple);">Updates</div>
+        <h2>Stay in the loop</h2>
+        <p>Subscribe to devlogs and project updates.</p>
+        <div class="coming-soon">Coming soon</div>
+      </div>
     </div>
   </div>
 </div>

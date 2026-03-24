@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Road Home — Contact</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared-nav.css">
+<style>
+  :root {
+    --bg: #F9F7F3;
+    --card: #FFFFFF;
+    --surface: #F1EFE9;
+    --text: #2C2A25;
+    --muted: #6B6862;
+    --faint: #A09D96;
+    --border: #E4E1DA;
+    --accent: #D4582A;
+    --accent-soft: rgba(212,88,42,0.08);
+    --font: 'Outfit', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .contact-screen {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem 4rem;
+  }
+  .contact-inner {
+    max-width: 520px;
+    width: 100%;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--faint);
+    margin-bottom: 0.25rem;
+  }
+  .section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+  .contact-text {
+    font-size: 0.92rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .contact-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: all 0.2s;
+  }
+  .contact-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  }
+  .contact-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .contact-card-body h2 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 0.2rem;
+  }
+  .contact-card-body p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.75rem;
+    color: var(--faint);
+    font-weight: 300;
+    background: var(--surface);
+  }
+</style>
+</head>
+<body>
+<script src="shared-nav.js"></script>
+
+<div class="contact-screen">
+  <div class="contact-inner">
+    <div class="section-label">Get in touch</div>
+    <div class="section-title">Contact</div>
+    <p class="contact-text">Have a question, feedback, or just want to say hi? Feel free to reach out — I'd love to hear from you.</p>
+    <a class="contact-card" href="mailto:orlandobsilva@outlook.com">
+      <div class="contact-icon">&#9993;</div>
+      <div class="contact-card-body">
+        <h2>Send me an email</h2>
+        <p>orlandobsilva@outlook.com</p>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="footer">Road Home &mdash; Game design project &mdash; March 2026</div>
+</body>
+</html>

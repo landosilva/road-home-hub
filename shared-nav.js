@@ -6,6 +6,7 @@
   const pages = [
     { href: 'gdd.html', label: 'GDD' },
     { href: 'screen-flow.html', label: 'Screen Flow' },
+    { href: 'contact.html', label: 'Contact' },
     { href: null, label: 'Demo 🔒', locked: true }
   ];
 
