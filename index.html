@@ -375,6 +375,65 @@
     cursor: pointer;
   }
 
+  /* === SUPPORT === */
+  .support-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  @media (max-width: 700px) { .support-grid { grid-template-columns: 1fr; } }
+  .support-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .support-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  }
+  .support-card .hub-icon { margin-bottom: 1rem; }
+  .support-card h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
+  }
+  .support-card p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.6;
+    flex: 1;
+  }
+  .support-card .hub-arrow {
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: gap 0.15s;
+  }
+  .support-card:hover .hub-arrow { gap: 0.6rem; }
+  .support-text {
+    font-size: 0.92rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    max-width: 640px;
+  }
+
   .footer {
     text-align: center;
     padding: 2rem;
@@ -451,9 +510,9 @@
 <!-- STORY: full screen -->
 <div class="section-screen" style="background:var(--surface)">
   <div class="section-inner">
-    <div class="section-label">The story behind the game</div>
     <div class="story-content">
       <div class="story-text">
+        <div class="section-label">The story behind the game</div>
         <h3>Inspired by a real journey</h3>
         <p>Sometimes you meet someone who supports all your craziness and changes your life forever. What started as a joke — <em>"I'll get a van and bring all your stuff here"</em> — became reality once our connection grew deep enough to take the leap: drive 7,000 km together. Scary, a little crazy — and an adventure we couldn't say no to.</p>
         <p>Road Home was born somewhere on that road. In the small rituals that kept the spirit alive — choosing the next song, stopping at remote gas stations where nobody speaks your language, stumbling onto views that make you pull over and just stand there, chasing the last light before dark and being up again before sunrise.</p>
@@ -478,6 +537,30 @@
   </div>
 </div>
 
+<!-- SUPPORT -->
+<div class="section-screen" style="background:var(--bg)">
+  <div class="section-inner">
+    <div class="section-label">Support the project</div>
+    <div class="section-title">Help bring Road Home to life</div>
+    <p class="support-text">Road Home is a passion project built on evenings and weekends. If the idea resonates with you, any support — big or small — helps keep the engine running.</p>
+    <div class="support-grid">
+      <a class="support-card" href="https://ko-fi.com/landosilva" target="_blank">
+        <div class="hub-icon" style="background:var(--accent-soft);color:var(--accent);">&#9749;</div>
+        <div class="hub-badge" style="color:var(--accent);">One-time</div>
+        <h2>Buy me a coffee</h2>
+        <p>A small tip to fuel late-night dev sessions and keep the project moving forward.</p>
+        <div class="hub-arrow">Support on Ko-fi <span>&rarr;</span></div>
+      </a>
+      <a class="support-card" href="https://ko-fi.com/landosilva/tiers" target="_blank">
+        <div class="hub-icon" style="background:var(--teal-soft);color:var(--teal);">&#10084;</div>
+        <div class="hub-badge" style="color:var(--teal);">Monthly</div>
+        <h2>Become a supporter</h2>
+        <p>Join as a monthly supporter and get early access to devlogs, builds, and behind-the-scenes updates.</p>
+        <div class="hub-arrow">See membership tiers <span>&rarr;</span></div>
+      </a>
+    </div>
+  </div>
+</div>
 
 <div class="footer">Road Home &mdash; Game design project &mdash; March 2026</div>
 
