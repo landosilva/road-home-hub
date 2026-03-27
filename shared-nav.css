@@ -26,6 +26,15 @@
   align-items: center;
   gap: 0.25rem;
 }
+.nav-header-tabs a, .nav-tab-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.nav-header-tabs a svg, .nav-tab-locked svg {
+  vertical-align: middle;
+  flex-shrink: 0;
+}
 .nav-header-tabs a {
   text-decoration: none;
   color: var(--muted, #6B6862);
